@@ -1,6 +1,6 @@
-const express = require('express');
-const router = express();
+const router = require('express')();
 const config = require('../config/config')[process.env.NODE_ENV || 'development'];
+//require('dotenv').config();
 
 router.listen(3000);
 
