@@ -15,6 +15,10 @@ const User = sequelize.define('user', {
     passwd: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    token: {
+        type: DataTypes.STRING(1024),
+        allowNull: true
     }
 }, {
     timestamps: false,

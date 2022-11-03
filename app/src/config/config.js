@@ -7,7 +7,8 @@ var config = {
             password: process.env.DB_PASS_DEV,
             database: process.env.DB_NAME_DEV,
             dialect: process.env.DB_DIAL_DEV
-        }
+        },
+        token: process.env.TOKEN_KEY_DEV
     },
     production: {
         database: {
@@ -17,7 +18,8 @@ var config = {
             password: process.env.DB_PASS,
             database: process.env.DB_NAME,
             dialect: process.env.DB_DIAL
-        }
+        },
+        token: process.env.TOKEN_KEY
     }
 }
 

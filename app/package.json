@@ -5,10 +5,11 @@
     "jsonwebtoken": "^8.5.1",
     "dotenv": "^8.2.0",
     "mysql2": "^2.1.0",
-    "sequelize": "^6.0.0"
+    "sequelize": "^6.0.0",
+    "bcryptjs": "^2.4.3"
   },
   "scripts": {
-    "start": "node src/routes/router.js",
-    "dev": "nodemon src/routes/router.js"
+    "start": "node src/public/app.js",
+    "dev": "nodemon src/public/app.js"
   }
 }
