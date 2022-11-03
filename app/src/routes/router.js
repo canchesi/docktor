@@ -1,11 +1,18 @@
+require('dotenv').config();
+
 const router = require('express')();
-const config = require('../config/config')[process.env.NODE_ENV || 'development'];
-//require('dotenv').config();
+//const config = require('../config/config')[process.env.NODE_ENV || 'development'];
+const User = require('../models/userModel');
 
 router.listen(3000);
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
 
+    await User.findAll()
+    .then((result) => {
+        res.send(result);
+    })
+    
     //const options = {
     //    socketPath: '/run/docker.sock',
     //    path: '/images/json',
