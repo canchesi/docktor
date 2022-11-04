@@ -76,7 +76,7 @@ const deleteUser = (async (req, res) => {
             res.status(401).send("Utente non trovato")
         else {
             await user.destroy();
-            res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"));
+            res.status(200).sendFile(path.join(__dirname + "/../public/index.html"));
         }
     } catch (error) {
         res.status(501).json(error);
@@ -96,7 +96,7 @@ const getAllUsers = (async (req, res) => {
 const deleteAllUsers = (async (req, res) => {
     try {
         await User.destroy({ where: {} });
-        res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"));
+        res.status(200).sendFile(path.join(__dirname + "/../public/index.html"));
     } catch (error) {
         res.status(501).json(error);
     }
@@ -144,7 +144,7 @@ const logoutUser = (async (req, res) => {
         else {
             user.token = null;
             await user.save();
-            res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"));
+            res.status(200).sendFile(path.join(__dirname + "/../public/index.html"));
         }
     } catch (error) {
         res.status(501).json(error);

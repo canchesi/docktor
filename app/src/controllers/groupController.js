@@ -53,7 +53,7 @@ const updateGroup = (async (req, res) => {
                 group.num_members = num_members;
                 group.is_private = is_private;
                 await group.save();
-                res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"))
+                res.status(200).sendFile(path.join(__dirname + "/../public/index.html"))
             }
         }
     } catch (error) {
@@ -73,7 +73,7 @@ const deleteGroup = (async (req, res) => {
                 res.status(401).send("Gruppo non trovato")
             else {
                 await group.destroy();
-                res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"))
+                res.status(200).sendFile(path.join(__dirname + "/../public/index.html"))
             }
         }
     } catch (error) {

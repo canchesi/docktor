@@ -1,5 +1,4 @@
 const path = require('path');
-const config = require('../config/config')[process.env.NODE_ENV || 'development'];
 const Info = require('../models/infoModel');
 
 const createInfo = (async (req, res) => {
@@ -55,7 +54,7 @@ const updateInfo = (async (req, res) => {
                 info.last_name = last_name;
                 info.birth_date = birth_date;
                 await info.save();
-                res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"))
+                res.status(200).sendFile(path.join(__dirname + "/../public/index.html"))
             }
         }
     } catch (error) {
@@ -75,7 +74,7 @@ const deleteInfo = (async (req, res) => {
                 res.status(401).send("Info non trovato")
             else {
                 await info.destroy();
-                res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"))
+                res.status(200).sendFile(path.join(__dirname + "/../public/index.html"))
             }
         }
     } catch (error) {

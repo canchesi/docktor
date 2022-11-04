@@ -5,7 +5,7 @@ const { createGroup } = require('../controllers/groupController');
 const { createInfo } = require('../controllers/infoController');
 
 router.get('/' ,(req, res) => {
-    res.sendFile(path.join(__dirname + "/../templates/register.html"))
+    res.sendFile(path.join(__dirname + "/../public/register.html"))
 });
 
 router.post('/', async (req, res) => {
@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
 
     if (okGroup)
         // TODO Vedere redirect
-        //res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"))
+        //res.status(200).sendFile(path.join(__dirname + "/../public/index.html"))
         res.status(200).send("Registrazione avvenuta con successo");
     else {
         console.log( {okUser, okInfo, okGroup} );
