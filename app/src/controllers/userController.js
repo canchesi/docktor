@@ -6,76 +6,26 @@ const jwt = require('jsonwebtoken');
 
 const createUser = (async (req, res) => {
     try {
-        const { email, passwd } = req.body;
+        const { email, passwd } = req;
         const oldUser = await User.findOne({ where: { email } });
 
         if (!(email && passwd)) 
-            res.status(400).send("Inserire tutti i campi richiesti.")
+            res(400);
         else if (oldUser) 
-            res.status(409).send("Utente già esistente")
-        else 
-            await User.create({
+            res(409);
+        else {
+            return await User.create({
                 email: email.toLowerCase(),
                 passwd: bcrypt.hashSync(passwd, bcrypt.genSaltSync(10)),
             })
-            .then(() => {
-                res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"))
-            })
-    } catch (error) {
-        res.status(501).json(error);
-    }
-})
-
-const loginUser = (async (req, res) => {
-    try {
-        const { email, passwd } = req.body;
-        const user = await User.findOne({ where: { email } });
-
-        if (!(email && passwd))
-            res.status(400).send("Inserire tutti i campi richiesti.")   
-        else if (!user)
-            res.status(401).send("Utente non trovato")
-        else if (!bcrypt.compareSync(passwd, user.passwd))
-            res.status(401).send("Password errata")
-        else {
-            const token = jwt.sign({
-                id: user.id,
-                email: user.email
-            },
-            config.token,
-            {
-                expiresIn: '1h'
-            });
-            user.token = token;
-            await user.save();
-            res.status(200).json({ token });
-        }
-
-    } catch (error) {
-        res.status(501).json(error);
-    }
-})
-
-const logoutUser = (async (req, res) => {
-    try {
-        const { token } = req.body;
-        const user = await User.findOne({ where: { token } });
-
-        if (!token)
-            res.status(400).send("Inserire tutti i campi richiesti.")
-        else if (!user)
-            res.status(401).send("Utente non trovato")
-        else {
-            user.token = null;
-            await user.save();
-            res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"));
+            .then(res(200))
         }
     } catch (error) {
-        res.status(501).json(error);
+        console.log(error)
+        res(501)
     }
 })
 
-const verifyToken = require('../middleware/auth');
 
 const getUser = (async (req, res) => {
     try {
@@ -133,6 +83,7 @@ const deleteUser = (async (req, res) => {
     }
 })
 
+// TODO: da verificare
 const getAllUsers = (async (req, res) => {
     try {
         const users = await User.findAll();
@@ -151,7 +102,58 @@ const deleteAllUsers = (async (req, res) => {
     }
 })
 
-const userController = {
+const loginUser = (async (req, res) => {
+    try {
+        const { email, passwd } = req.body;
+        const user = await User.findOne({ where: { email } });
+
+        if (!(email && passwd))
+            res.status(400).send("Inserire tutti i campi richiesti.")   
+        else if (!user)
+            res.status(401).send("Utente non trovato")
+        else if (!bcrypt.compareSync(passwd, user.passwd))
+            res.status(401).send("Password errata")
+        else {
+            const token = jwt.sign({
+                id: user.id,
+                email: user.email
+            },
+            config.token,
+            {
+                expiresIn: '1h'
+            });
+            user.token = token;
+            await user.save();
+            res.status(200).json({ token });
+        }
+
+    } catch (error) {
+        res.status(501).json(error);
+    }
+})
+
+const logoutUser = (async (req, res) => {
+    try {
+        const { token } = req.body;
+        const user = await User.findOne({ where: { token } });
+
+        if (!token)
+            res.status(400).send("Inserire tutti i campi richiesti.")
+        else if (!user)
+            res.status(401).send("Utente non trovato")
+        else {
+            user.token = null;
+            await user.save();
+            res.status(200).sendFile(path.join(__dirname + "/../templates/index.html"));
+        }
+    } catch (error) {
+        res.status(501).json(error);
+    }
+})
+
+const verifyToken = require('../middleware/auth');
+
+module.exports = {
     createUser,
     loginUser,
     logoutUser,
@@ -162,5 +164,3 @@ const userController = {
     getAllUsers,
     deleteAllUsers
 }
-
-module.exports = userController;
