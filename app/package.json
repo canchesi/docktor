@@ -9,7 +9,7 @@
     "bcryptjs": "^2.4.3"
   },
   "scripts": {
-    "start": "node src/public/app.js",
-    "dev": "nodemon src/public/app.js"
+    "start": "node src/routes/app.js",
+    "dev": "nodemon src/routes/app.js"
   }
 }
