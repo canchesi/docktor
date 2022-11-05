@@ -8,7 +8,7 @@ router.get('/' ,(req, res) => {
     res.sendFile(path.join(__dirname + "/../public/register.html"))
 });
 
-router.post('/', async (req, res) => {
+router.put('/', async (req, res) => {
     
     const { cred, infos } = req.body;
     const { email, passwd } = cred;
