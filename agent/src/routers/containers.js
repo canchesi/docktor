@@ -1,4 +1,11 @@
 const containers = require('express').Router();
+const cors = require('cors');
+const bodyParser = require('body-parser');
+
+containers.use(cors());
+containers.use(bodyParser.urlencoded({extended: true}));
+containers.use(bodyParser.json())
+
 
 const {
     getContainer,

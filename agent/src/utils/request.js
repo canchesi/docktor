@@ -1,16 +1,23 @@
 const http = require('http');
+const createPath = require('./query');
 
 
-const request = async (path, method) => {
-    
+const request = async (params) => {
+
+    var { path, req } = params;
+    path = createPath(path, req.query);
+
     const options = {
         socketPath: '/run/docker.sock',
         path: path,
-        method: method,
+        method: req.method,
         verbose: true,
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/json',
+            ...req.headers
+        },
+        body: req.body,
+        query: req.query
     };
 
     const makeRequest = () => {
@@ -21,8 +28,8 @@ const request = async (path, method) => {
                     data: ''
                 };
 
-                res.on('data', (chunk) => {
-                    result.data += chunk;
+                res.on('data', (data) => {
+                    result.data += data;
                 });
 
                 res.on('end', () => {
@@ -41,7 +48,5 @@ const request = async (path, method) => {
     return await makeRequest();
      
 }
-
-//console.log(request('/images/json', 'GET'));
 
 module.exports = request;

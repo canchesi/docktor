@@ -6,9 +6,9 @@ const home = require('./home');
 const register = require('./register');
 
 // ------ Robe da server ------
-app.listen(3000);
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json())
+app.listen(3000);
 
 // ----- Routing ------
 app.use('/', home)

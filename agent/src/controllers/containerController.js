@@ -1,47 +1,91 @@
 const request = require('../utils/request');
 
-const getContainer = (req, res) => {
-    request(`/containers/${req.params.id}/json`, 'GET');
+const getContainer = async (req, res) => {
+    const result = await request({
+        path: `/containers/${req.params.id}/json`,
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const getContainers = (req, res) => {
-    request('/containers/json', 'GET');
+const getContainers = async (req, res) => {
+    const result = await request({
+        path: '/containers/json',
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const getContainerLogs = (req, res) => {
-    request(`/containers/${req.params.id}/logs`, 'GET');
+const getContainerLogs = async (req, res) => {
+    const result = await request({
+        path: `/containers/${req.params.id}/logs`,
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const createContainer = (req, res) => {
-    request('/containers/create', 'POST');
+const createContainer = async (req, res) => {
+    const result = await request({
+        path: '/containers/create',
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const startContainer = (req, res) => {
-    request(`/containers/${req.params.id}/start`, 'POST');
+const startContainer = async (req, res) => {
+    const result = await request({
+        path: `/containers/${req.params.id}/start`,
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const stopContainer = (req, res) => {
-    request(`/containers/${req.params.id}/stop`, 'POST');
+const stopContainer = async (req, res) => {
+    const result = await request({
+        path: `/containers/${req.params.id}/stop`,
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const restartContainer = (req, res) => {
-    request(`/containers/${req.params.id}/restart`, 'POST');
+const restartContainer = async (req, res) => {
+    const result = await request({
+        path: `/containers/${req.params.id}/restart`,
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const renameContainer = (req, res) => {
-    request(`/containers/${req.params.id}/rename`, 'POST');
+const renameContainer = async (req, res) => {
+    const result = await request({
+        path: `/containers/${req.params.id}/rename`,
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const pauseContainer = (req, res) => {
-    request(`/containers/${req.params.id}/pause`, 'POST');
+const pauseContainer = async (req, res) => {
+    const result = await request({
+        path: `/containers/${req.params.id}/pause`,
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const unpauseContainer = (req, res) => {
-    request(`/containers/${req.params.id}/unpause`, 'POST');
+const unpauseContainer = async (req, res) => {
+    const result = await request({
+        path: `/containers/${req.params.id}/unpause`,
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
-const deleteContainer = (req, res) => {
-    request(`/containers/${req.params.id}`, 'DELETE');
+const deleteContainer = async (req, res) => {
+    const result = await request({
+        path: `/containers/${req.params.id}`,
+        req: req
+    })
+    res.status(result.statusCode).send(result.data);
 }
 
 module.exports = {
