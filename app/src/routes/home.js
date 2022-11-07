@@ -5,7 +5,7 @@ const { loginUser } = require('../controllers/userController');
 
 // login.html è per prova, ci dovrebbe essere index.html
 
-router.get('/' , /*verifyToken*/, (req, res) => {
+router.get('/' , /*verifyToken,*/ (req, res) => {
     res.sendFile(path.join(__dirname, '../public/login.html')); 
 });
 

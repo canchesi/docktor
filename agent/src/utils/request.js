@@ -6,6 +6,7 @@ const request = async (params) => {
 
     var { path, req } = params;
     path = createPath(path, req.query);
+    const { 'content-type': contentType, ...headers } = req.headers;
 
     const options = {
         socketPath: '/run/docker.sock',
@@ -14,7 +15,7 @@ const request = async (params) => {
         verbose: true,
         headers: {
             'Content-Type': 'application/json',
-            ...req.headers
+            ...headers
         },
         body: req.body,
         query: req.query

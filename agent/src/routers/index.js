@@ -1,7 +1,7 @@
 const api = require('express').Router();
 const images = require('./images');
 const containers = require('./containers');
-//const volumes = require('./volumes');
+const volumes = require('./volumes');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
@@ -13,6 +13,6 @@ api.use('/images', images);
 
 api.use('/containers', containers);
 
-//api.use('/volumes', volumes);
+api.use('/volumes', volumes);
 
 module.exports = api;

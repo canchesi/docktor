@@ -9,16 +9,14 @@
 
 <script>
         $.ajax({
-            url: "http://localhost:3100/api/containers",
-            type: "GET",
+            url: "http://localhost:3100/api/volumes/test",
+            type: "DELETE",
             crossDomain: true,
             data: {
-                all: true
-            },
+            },  
             success: function(data) {
-                console.log('a')
+                console.log(data);
                 $("#a").append(data);
-            }
+            },
         });
-
 </script>
