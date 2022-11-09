@@ -5,48 +5,44 @@ const createPath = require('./query');
 const request = async (params) => {
 
     var { path, req } = params;
-    path = createPath(path, req.query);
-    const { 'content-type': contentType, ...headers } = req.headers;
+    const body = JSON.stringify(req.body);
 
     const options = {
         socketPath: '/run/docker.sock',
-        path: path,
+        path: createPath(path, req.query),
         method: req.method,
         verbose: true,
-        headers: {
+        headers: req.method === 'POST' || req.method === 'PUT' ? {
+            ...req.headers,
             'Content-Type': 'application/json',
-            ...headers
-        },
-        body: req.body,
-        query: req.query
+            'Content-Length': Buffer.byteLength(body)
+        } : req.headers
     };
 
-    const makeRequest = () => {
-        return new Promise((resolve, reject) => {
-            const req = http.request(options, (res) => {
-                let result = {
-                    statusCode: res.statusCode,
-                    data: ''
-                };
+    return new Promise((resolve, reject) => {
+        const req = http.request(options, (res) => {
+            let result = {
+                statusCode: res.statusCode,
+                data: ''
+            };
 
-                res.on('data', (data) => {
-                    result.data += data;
-                });
-
-                res.on('end', () => {
-                    resolve(result);
-                });
+            res.on('data', (data) => {
+                result.data += data;
             });
 
-            req.on('error', (err) => {
-                reject(err);
+            res.on('end', () => {
+                resolve(result);
             });
-
-            req.end();
         });
-    }
-    
-    return await makeRequest();
+
+        req.on('error', (err) => {
+            reject(err);
+        });
+
+        if (body)
+            req.write(body);
+        req.end();
+    });
      
 }
 

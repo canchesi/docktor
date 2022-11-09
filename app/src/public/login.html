@@ -8,15 +8,22 @@
 </body>
 
 <script>
+    $(document).ready(function() {
         $.ajax({
-            url: "http://localhost:3100/api/volumes/test",
-            type: "DELETE",
+            url: "http://localhost:3100/api/volumes/create",
+            type: "POST",
             crossDomain: true,
+            dataType: "json",
             data: {
-            },  
-            success: function(data) {
-                console.log(data);
-                $("#a").append(data);
+                Name: "asdfasdfagafdg"
             },
+            success: function(data) {
+                console.log(data)
+                if (typeof data === "string" ) 
+                    $("#a").append(data);
+                else
+                    $("#a").append(JSON.stringify(data));
+            }
         });
+    });
 </script>

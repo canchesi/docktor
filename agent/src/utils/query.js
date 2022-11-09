@@ -1,12 +1,8 @@
 const createPath = (path, query) => {
-    let result = path;
-    if (query) {
-        result += '?';
-        for (let key in query)
-            result += `${key}=${query[key]}&`;
-        result = result.slice(0, -1);
-    }
-    return result;
+    let result = path + '?';
+    for (let key in query)
+        result += `${key}=${query[key]}&`;
+    return result.slice(0, -1);
 }
 
 module.exports = createPath;

@@ -1,11 +1,9 @@
-const volumes = require('express').Router();
+const express = require('express');
+const volumes = express.Router();
 const { getVolumes, getVolume, createVolume, deleteVolume, pruneVolumes } = require('../controllers/volumeController');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 
 volumes.use(cors());
-volumes.use(bodyParser.urlencoded({extended: true}));
-volumes.use(bodyParser.json())
 
 volumes.get('/', getVolumes);
 volumes.get('/:id', getVolume);

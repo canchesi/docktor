@@ -16,7 +16,7 @@ const getVolume = async (req, res) => {
     res.status(result.statusCode).send(result.data);
 }
 
-/* const createVolume = async (req, res) => {
+ const createVolume = async (req, res) => {
     const result = await request({
         path: '/volumes/create',
         req: req
@@ -31,7 +31,6 @@ const deleteVolume = async (req, res) => {
     });
     res.status(result.statusCode).send(result.data);
 }
-*/
 
 const pruneVolumes = async (req, res) => {
     const result = await request({
