@@ -10,15 +10,14 @@
 <script>
     $(document).ready(function() {
         $.ajax({
-            url: "http://localhost:3100/api/volumes/create",
+            url: "http://localhost:3100/api/images/create?fromImage=hello-world",
             type: "POST",
             crossDomain: true,
-            dataType: "json",
+            //dataType: "json",
             data: {
-                Name: "asdfasdfagafdg"
+                fromImage: "hello-world"
             },
-            success: function(data) {
-                console.log(data)
+            success: (data) => {
                 if (typeof data === "string" ) 
                     $("#a").append(data);
                 else

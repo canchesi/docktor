@@ -1,9 +1,11 @@
-const express = require('express');
-const volumes = express.Router();
-const { getVolumes, getVolume, createVolume, deleteVolume, pruneVolumes } = require('../controllers/volumeController');
-const cors = require('cors');
-
-volumes.use(cors());
+const volumes = require('express').Router();
+const {
+    getVolumes,
+    getVolume,
+    createVolume,
+    deleteVolume,
+    pruneVolumes
+} = require('../controllers/volumeController');
 
 volumes.get('/', getVolumes);
 volumes.get('/:id', getVolume);

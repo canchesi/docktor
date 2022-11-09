@@ -1,14 +1,12 @@
-const express = require('express');
-const api = require('express').Router();
+const { urlencoded, json, Router} = require('express');
+const api = Router();
 const images = require('./images');
 const containers = require('./containers');
 const volumes = require('./volumes');
 const networks = require('./networks');
-const cors = require('cors');
 
-api.use(cors());
-api.use(express.urlencoded({extended: true}));
-api.use(express.json());
+api.use(urlencoded({extended: true}));
+api.use(json());
 
 api.use('/images', images);
 api.use('/containers', containers);
