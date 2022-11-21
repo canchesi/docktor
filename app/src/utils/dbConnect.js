@@ -16,6 +16,7 @@ const sequelize = new Sequelize(
             createdAt: false,
             updatedAt: false
         }
-    });
+    }
+);
 
-module.exports = sequelize.authenticate() ? sequelize : null;
+module.exports = sequelize.authenticate() && sequelize;

@@ -1,115 +1,109 @@
-const path = require('path');
 const config = require('../config/config')[process.env.NODE_ENV || 'development'];
+const sequelize = require('../utils/dbConnect');
 const User = require('../models/userModel');
+const Group = require('../models/groupModel');
+const UserGroupRelation = require('../models/userGroupModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const getTrueFields = require('../utils/getTrueFields');
+const checkAllFields = require('../utils/checkAllFields');
 
-const createUser = (async (req, res) => {
+const createUser = async (req, res) => {
+
+    const transaction = await sequelize.transaction();
+    const { email, passwd } = req.body;
     try {
-        const { email, passwd } = req;
-        const oldUser = await User.findOne({ where: { email } });
 
-        if (!(email && passwd)) 
-            res(400);
-        else if (oldUser) 
-            res(409);
-        else {
-            return await User.create({
-                email: email.toLowerCase(),
-                passwd: bcrypt.hashSync(passwd, bcrypt.genSaltSync(10)),
-            })
-            .then(res(200))
-        }
+        const user = await User.create({
+            email: email,
+            passwd: bcrypt.hashSync(passwd, await bcrypt.genSalt(10))
+        }, { transaction });
+        const group = await Group.create({
+            name: user.id,
+            num_members: 1,
+            is_private: true
+        }, { transaction });
+        await UserGroupRelation.create({
+            uid: user.id,
+            gid: group.id
+        }, { transaction });
+        await transaction.commit();
+
     } catch (error) {
-        console.log(error)
-        res(501)
+        await transaction.rollback();
+        res.status(501).send("Errore durante la registrazione");
     }
-})
+    res.status(200).send("Registrazione avvenuta con successo");
+}
 
+const getUser = async(req, res) => {
 
-const getUser = (async (req, res) => {
+    const id = req.params.id;
+    const user = await User.findOne({
+        where: {
+            id: id
+        }, 
+        attributes: getTrueFields(req.query)
+    });
+
+    if (user)
+        res.status(200).send(user);
+    else
+        res.status(404).send("Utente non trovato");
+    
+}
+
+const getUsers = async (req, res) => {
+    const users = await User.findAll({
+        attributes: getTrueFields(req.query)
+    });
+    if (users)
+        res.status(200).send(users);
+    else
+        res.status(404).send("Nessun utente trovato");
+}
+
+const updateUser = async (req, res) => {
+    
+    const { email, passwd } = req.body;
     try {
-        const { token } = req.body;
-        const user = await User.findOne({ where: { token } });
-        
-        if (!token)
-            res.status(400).send("Inserire tutti i campi richiesti.")
-        else if (!user)
-            res.status(401).send("Utente non trovato")
-        else
-            res.status(200).json(user);
+        await User.update({
+            email: email,
+            passwd: bcrypt.hashSync(passwd, await bcrypt.genSalt(10))
+        }, {
+            where: {
+                id: req.params.id
+            }
+        });
     } catch (error) {
-        res.status(501).json(error);
+        res.status(501).send("Errore durante la modifica");
     }
-})
+    res.status(200).send("Modifica avvenuta con successo");
+}
 
-const updateUser = (async (req, res) => {
+const deleteUser = async (req, res) => {
+
     try {
-        const { token, email, passwd } = req.body;
-        const user = await User.findOne({ where: { token } });
-
-        if (!token)
-            res.status(400).send("Inserire tutti i campi richiesti.")
-        else if (!user)
-            res.status(401).send("Utente non trovato")
-        else {
-            if (email)
-                user.email = email;
-            if (passwd)
-                user.passwd = bcrypt.hashSync(passwd, bcrypt.genSaltSync(10));
-            await user.save();
-            res.status(200).json(user);
-        }
+        await User.destroy({
+            where: {
+                id: req.params.id
+            }
+        });
     } catch (error) {
-        res.status(501).json(error);
+        res.status(501).send("Errore durante la cancellazione");
     }
-})
-
-const deleteUser = (async (req, res) => {
-    try {
-        const { token } = req.body;
-        const user = await User.findOne({ where: { token } });
-
-        if (!token)
-            res.status(400).send("Inserire tutti i campi richiesti.")
-        else if (!user)
-            res.status(401).send("Utente non trovato")
-        else {
-            await user.destroy();
-            res.status(200).sendFile(path.join(__dirname + "/../public/index.html"));
-        }
-    } catch (error) {
-        res.status(501).json(error);
-    }
-})
-
-// TODO: da verificare
-const getAllUsers = (async (req, res) => {
-    try {
-        const users = await User.findAll();
-        res.status(200).json(users);
-    } catch (error) {
-        res.status(501).json(error);
-    }
-})
-
-const deleteAllUsers = (async (req, res) => {
-    try {
-        await User.destroy({ where: {} });
-        res.status(200).sendFile(path.join(__dirname + "/../public/index.html"));
-    } catch (error) {
-        res.status(501).json(error);
-    }
-})
+    res.status(200).send("Cancellazione avvenuta con successo");
+}
 
 const loginUser = (async (req, res) => {
     try {
         const { email, passwd } = req.body;
+        if (!checkAllFields([email, passwd]))
+            res.status(400).send("Inserire tutti i campi richiesti.")   
+        
         const user = await User.findOne({ where: { email } });
 
-        if (!(email && passwd))
-            res.status(400).send("Inserire tutti i campi richiesti.")   
-        else if (!user)
+        if (!user)
             res.status(401).send("Utente non trovato")
         else if (!bcrypt.compareSync(passwd, user.passwd))
             res.status(401).send("Password errata")
@@ -144,23 +138,19 @@ const logoutUser = (async (req, res) => {
         else {
             user.token = null;
             await user.save();
-            res.status(200).sendFile(path.join(__dirname + "/../public/index.html"));
+            goTo("index.html");
         }
     } catch (error) {
         res.status(501).json(error);
     }
 })
 
-const verifyToken = require('../middleware/auth');
-
 module.exports = {
     createUser,
-    loginUser,
-    logoutUser,
-    verifyToken,
     getUser,
+    getUsers,
     updateUser,
     deleteUser,
-    getAllUsers,
-    deleteAllUsers
+    loginUser,
+    logoutUser
 }

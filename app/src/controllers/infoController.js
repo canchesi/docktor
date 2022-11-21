@@ -1,90 +1,70 @@
-const path = require('path');
 const Info = require('../models/infoModel');
 
-const createInfo = (async (req, res) => {
-    try {
-        const { first_name, last_name, birth_date, uid } = req;
-
-        if (!(first_name && last_name && birth_date))
-            res(400)
-        else
-            return await Info.create({
-                first_name: first_name,
-                last_name: last_name,
-                birth_date: birth_date,
-                uid: uid
-            })
-            .then(res(200))
-    } catch (error) {
-        console.log(error)
-        res(501)
-    }
-})
-
-const getInfo = (async (req, res) => {
-    try {
-        const { id } = req.body;
-
-        if (!id)
-            res.status(400).send("Inserire tutti i campi richiesti.")
-        else {
-            const info = await Info.findOne({ where: { id } });
-            if (!info)
-                res.status(401).send("Info non trovato")
-            else
-                res.status(200).json(info);
+const getInfo = async (req, res) => {
+    const info = await Info.findOne({
+        where: {
+            id: req.params.id
         }
-    } catch (error) {
-        res.status(501).json(error);
-    }
-})
+    });
 
-const updateInfo = (async (req, res) => {
+    if (info)
+        res.status(200).send(info);
+    else
+        res.status(404).send("Info non trovata");
+        
+}
+
+const createInfo = async (req, res) => {
+    const { uid, first_name, last_name, birth_date } = req.body;
     try {
-        const { id, first_name, last_name, birth_date } = req.body;
+        Info.create({
+            uid: uid,
+            first_name: first_name,
+            last_name: last_name,
+            birth_date: birth_date
+        });
+    } catch (error) {
+        res.status(501).send("Errore durante la creazione dell'info");
+    }
 
-        if (!(id && first_name && last_name && birth_date))
-            res.status(400).send("Inserire tutti i campi richiesti.")
-        else {
-            const info = await Info.findOne({ where: { id } });
-            if (!info)
-                res.status(401).send("Info non trovato")
-            else {
-                info.first_name = first_name;
-                info.last_name = last_name;
-                info.birth_date = birth_date;
-                await info.save();
-                res.status(200).sendFile(path.join(__dirname + "/../public/index.html"))
+    res.status(200).send("Info creata con successo");
+}
+
+const updateInfo = async (req, res) => {
+    const { first_name, last_name, birth_date } = req.body;    
+    try {
+        await Info.update({
+            first_name: first_name,
+            last_name: last_name,
+            birth_date: birth_date
+        }, {
+            where: {
+                id: req.params.id
             }
-        }
+        });
     } catch (error) {
-        res.status(501).json(error);
+        res.status(501).send("Errore durante l'aggiornamento dell'info");
     }
-})
+    res.status(200).send("Info aggiornata con successo");
+}
 
-const deleteInfo = (async (req, res) => {
+const deleteInfo = async (req, res) => {
+    const id = req.params.id;
     try {
-        const { id } = req.body;
-
-        if (!id)
-            res.status(400).send("Inserire tutti i campi richiesti.")
-        else {
-            const info = await Info.findOne({ where: { id } });
-            if (!info)
-                res.status(401).send("Info non trovato")
-            else {
-                await info.destroy();
-                res.status(200).sendFile(path.join(__dirname + "/../public/index.html"))
+        await Info.destroy({
+            where: {
+                id: id
             }
-        }
+        });
     } catch (error) {
-        res.status(501).json(error);
+        res.status(501).send("Errore durante la cancellazione dell'info");
     }
-})
+    res.status(200).send("Info cancellata con successo");
+}
 
 module.exports = {
-    createInfo,
     getInfo,
+    createInfo,
     updateInfo,
     deleteInfo
 }
