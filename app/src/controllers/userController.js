@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const getTrueFields = require('../utils/getTrueFields');
 const checkAllFields = require('../utils/checkAllFields');
+const sendError = require('../utils/sendError');
 
 const createUser = async (req, res) => {
 
@@ -32,6 +33,7 @@ const createUser = async (req, res) => {
     } catch (error) {
         await transaction.rollback();
         res.status(501).send("Errore durante la registrazione");
+        return 
     }
     res.status(200).send("Registrazione avvenuta con successo");
 }
@@ -76,23 +78,44 @@ const updateUser = async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(501).send("Errore durante la modifica");
+        sendError(error, res);
+        return;
     }
     res.status(200).send("Modifica avvenuta con successo");
 }
 
 const deleteUser = async (req, res) => {
 
-    try {
-        await User.destroy({
-            where: {
-                id: req.params.id
-            }
-        });
-    } catch (error) {
-        res.status(501).send("Errore durante la cancellazione");
-    }
-    res.status(200).send("Cancellazione avvenuta con successo");
+    const transaction = await sequelize.transaction();
+        try {
+            await UserGroupRelation.destroy({
+                where: {
+                    uid: req.params.id
+                }
+            }, { transaction });
+            await User.destroy({
+                where: {
+                    id: req.params.id
+                }
+            }, { transaction });
+            await Group.destroy({
+                where: {
+                    name: req.params.id
+                }
+            }, { transaction });
+            await Group.increment('num_members', {
+                by: -1,
+                where: {
+                    name: req.params.id
+                }
+            }, { transaction });
+            await transaction.commit();
+            res.status(200).send("Cancellazione avvenuta con successo");
+        } catch (error) {
+            await transaction.rollback();
+            sendError(error, res);
+            return;
+        }
 }
 
 const loginUser = (async (req, res) => {

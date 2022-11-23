@@ -6,15 +6,17 @@ const {
     updateGroup,
     deleteGroup,
     addUserToGroup,
+    removeUserFromGroup
 } = require('../controllers/groupController');
 const alreadyExists = require('../middleware/alreadyExists');
 
 groups.get('/', getGroups);
 groups.get('/:id', getGroup);
-groups.post('/:id/add', alreadyExists('userGroup'), addUserToGroup);
-groups.post('/create', alreadyExists('group'), createGroup);
+groups.post('/:id/add', alreadyExists('userGroup', false), alreadyExists('group', true), alreadyExists('user', true), addUserToGroup);
+groups.post('/create', alreadyExists('group', false), createGroup);
 groups.put('/:id', updateGroup);
-groups.delete('/:id', deleteGroup);
+groups.delete('/:id',  alreadyExists('group', true), deleteGroup);
+groups.delete('/:id/remove', alreadyExists('userGroup', true), alreadyExists('group', true), alreadyExists('user', true), removeUserFromGroup);
 
 
 module.exports = groups;

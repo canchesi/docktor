@@ -10,8 +10,8 @@ const alreadyExists = require('../middleware/alreadyExists');
 
 users.get('/', getUsers);
 users.get('/:id', getUser);
-users.post('/create', alreadyExists('user'), createUser);
-users.put('/:id', updateUser);
-users.delete('/:id', deleteUser);
+users.post('/create', alreadyExists('user', false), createUser);
+users.put('/:id', alreadyExists('user', true), updateUser);
+users.delete('/:id', alreadyExists('user', true), deleteUser);
 
 module.exports = users;

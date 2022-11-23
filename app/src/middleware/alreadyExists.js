@@ -2,58 +2,75 @@ const User = require('../models/userModel');
 const Group = require('../models/groupModel');
 const Info = require('../models/infoModel');
 const UserGroupRelation = require('../models/userGroupModel');
+const { Op } = require('sequelize');
 
-const alreadyExists = (objType) => (req, res, next) => {
+const alreadyExists = (objType, checkType) => async (req, res, next) => {
     if (typeof(objType) !== 'string') {
         res.status(500).send("Errore interno");
         return;
     }
-    switch (objType) {
-        case 'user':
-            if (User.findOne({
-                where: {
-                    email: req.body.email
+    if (typeof(checkType) == 'boolean') {
+        switch (objType) {
+            case 'user':
+                if (Boolean(await User.findOne({
+                    where: {
+                        [Op.or]: [
+                            { email: req.body.email || '' },
+                            { id: req.body.uid || req.params.id || '' }
+                        ]
+                    }
+                })) != checkType) {
+                    res.status(409).send("Utente " + (checkType ? " non " : " già ") + "presente");
+                    return;
                 }
-            })) {
-                res.status(409).send("Email già in uso");
-                return;
-            }
-            break;
-        case 'group':
-            if (Group.findOne({
-                where: {
-                    name: req.body.name
+                break;
+            case 'group':
+                if (Boolean(await Group.findOne({
+                    where: {
+                        [Op.or]: [
+                            { name: req.body.name || ''},
+                            { id: req.params.id || req.body.gid || '' }
+                        ]
+                    }
+                })) != checkType) {
+                    res.status(409).send("Gruppo" + (checkType ? " non " : " già ") + "presente");
+                    return;
                 }
-            })) {
-                res.status(409).send("Nome già in uso");
-                return;
-            }
-            break;
-        case 'info':
-            if (Info.findOne({
-                where: {
-                    name: req.body.name
+                break;
+            case 'info':
+                if (Boolean(await Info.findOne({
+                    where: {
+                        [Op.or]: [
+                            { uid: req.body.uid || '' },
+                            { id: req.params.id || req.body.id || '' }
+                        ]
+                    }
+                })) != checkType) {
+                    res.status(409).send("Info " + (checkType ? " non " : " già ") + " presente");
+                    return;
                 }
-            })) {
-                res.status(409).send("Nome già in uso");
-                return;
-            }
-            break;
-        case 'userGroup':
-            if (UserGroupRelation.findOne({
-                where: {
-                    userId: req.body.uid,
-                    groupId: req.body.gid
+                break;
+            case 'userGroup':
+                if (Boolean(await UserGroupRelation.findOne({
+                    where: {
+                        [Op.or]: [
+                            { uid: req.body.uid || '' ,
+                              gid: req.body.gid || Number(req.params.id) || '' },
+                            { id: req.body.id || '' }
+                        ]
+                    }
+                })) != checkType) {
+                    res.status(409).send("Relazione " + (checkType ? " non " : " già ") + " presente");
+                    return;
                 }
-            })) {
-                res.status(409).send("Relazione già esistente");
+                break;
+            default:
+                res.status(501).send("Errore interno");
                 return;
-            }
-            break;
-        default:
-            res.status(501).send("Errore interno");
-            return;
-    }
+        }
+    } else
+        throw new Error("checkType must be a boolean");
+
     next();
 }
 
