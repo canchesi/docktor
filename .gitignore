@@ -1,2 +1,4 @@
 app/node_modules
+app/.env
+
 agent/node_modules
