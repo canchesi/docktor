@@ -13,7 +13,6 @@ const createUser = async (req, res) => {
 
     const transaction = await sequelize.transaction();
     const { email, passwd } = req.body;
-    console.log(!checkAllFields([email, passwd]));
     if (!checkAllFields([email, passwd])) {
         res.status(400).send("Richiesta non valida");
         return;

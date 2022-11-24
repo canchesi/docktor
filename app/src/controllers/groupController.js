@@ -126,7 +126,6 @@ const addUserToGroup = async (req, res) => {
         }, { transaction });
         await transaction.commit();
     } catch (error) {
-        console.log(error)
         await transaction.rollback();
         sendError(error, res);
     }
