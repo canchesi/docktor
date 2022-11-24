@@ -1,5 +1,7 @@
+// ------- Environment Variables -------
 require('dotenv').config();
 
+// ------- Imports -------
 const app = require('express')();
 const bodyParser = require('body-parser');
 const home = require('./home');

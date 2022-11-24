@@ -13,6 +13,11 @@ const createUser = async (req, res) => {
 
     const transaction = await sequelize.transaction();
     const { email, passwd } = req.body;
+    console.log(!checkAllFields([email, passwd]));
+    if (!checkAllFields([email, passwd])) {
+        res.status(400).send("Richiesta non valida");
+        return;
+    }
     try {
 
         const user = await User.create({
@@ -29,13 +34,13 @@ const createUser = async (req, res) => {
             gid: group.id
         }, { transaction });
         await transaction.commit();
+        res.status(200).send("Registrazione avvenuta con successo");
 
     } catch (error) {
         await transaction.rollback();
-        res.status(501).send("Errore durante la registrazione");
+        sendError(error, res);
         return 
     }
-    res.status(200).send("Registrazione avvenuta con successo");
 }
 
 const getUser = async(req, res) => {
@@ -69,53 +74,65 @@ const updateUser = async (req, res) => {
     
     const { email, passwd } = req.body;
     try {
-        await User.update({
-            email: email,
-            passwd: bcrypt.hashSync(passwd, await bcrypt.genSalt(10))
-        }, {
-            where: {
-                id: req.params.id
-            }
-        });
-    } catch (error) {
-        sendError(error, res);
-        return;
-    }
-    res.status(200).send("Modifica avvenuta con successo");
-}
-
-const deleteUser = async (req, res) => {
-
-    const transaction = await sequelize.transaction();
-        try {
-            await UserGroupRelation.destroy({
-                where: {
-                    uid: req.params.id
-                }
-            }, { transaction });
-            await User.destroy({
+        const transaction = await sequelize.transaction();
+        if (email) {
+            await User.update({
+                email: email
+            }, {
                 where: {
                     id: req.params.id
                 }
             }, { transaction });
-            await Group.destroy({
-                where: {
-                    name: req.params.id
-                }
-            }, { transaction });
-            await Group.increment('num_members', {
-                by: -1,
-                where: {
-                    name: req.params.id
-                }
-            }, { transaction });
-            await transaction.commit();
-            res.status(200).send("Cancellazione avvenuta con successo");
-        } catch (error) {
-            await transaction.rollback();
-            sendError(error, res);
-            return;
         }
+        if (passwd) {
+            await User.update({
+                passwd: bcrypt.hashSync(passwd, await bcrypt.genSalt(10))
+            }, {
+                where: {
+                    id: req.params.id
+                }
+            }, { transaction });
+        }
+        await transaction.commit();
+        res.status(200).send("Modifica avvenuta con successo");
+    } catch (error) {
+        await transaction.rollback();
+        sendError(error, res);
+        return;
+    }
+}
+
+const deleteUser = async (req, res) => {
+    try {
+        const transaction = await sequelize.transaction();
+        await UserGroupRelation.destroy({
+            where: {
+                uid: req.params.id
+            }
+        }, { transaction });
+        await User.destroy({
+            where: {
+                id: req.params.id
+            }
+        }, { transaction });
+        await Group.destroy({
+            where: {
+                name: req.params.id
+            }
+        }, { transaction });
+        await Group.decrement('num_members', {
+            by: 1,
+            where: {
+                name: req.params.id
+            }
+        }, { transaction });
+        await transaction.commit();
+        res.status(200).send("Cancellazione avvenuta con successo");
+    } catch (error) {
+        await transaction.rollback();
+        sendError(error, res);
+        return;
+    }
 }
 
 const loginUser = (async (req, res) => {
