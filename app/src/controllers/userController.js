@@ -71,27 +71,13 @@ const getUsers = async (req, res) => {
 
 const updateUser = async (req, res) => {
     
-    const { email, passwd } = req.body;
     try {
         const transaction = await sequelize.transaction();
-        if (email) {
-            await User.update({
-                email: email
-            }, {
+            await User.update(req.body, {
                 where: {
                     id: req.params.id
                 }
             }, { transaction });
-        }
-        if (passwd) {
-            await User.update({
-                passwd: bcrypt.hashSync(passwd, await bcrypt.genSalt(10))
-            }, {
-                where: {
-                    id: req.params.id
-                }
-            }, { transaction });
-        }
         await transaction.commit();
         res.status(200).send("Modifica avvenuta con successo");
     } catch (error) {

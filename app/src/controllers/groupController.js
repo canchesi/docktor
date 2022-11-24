@@ -56,13 +56,8 @@ const createGroup = async (req, res) => {
 }
 
 const updateGroup = async (req, res) => {
-    const { name, num_members, is_private } = req.body;
     try {
-        await Group.update({
-            name: name,
-            num_members: num_members,
-            is_private: is_private
-        }, {
+        await Group.update(req.body, {
             where: {
                 id: req.params.id
             }

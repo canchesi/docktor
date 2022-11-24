@@ -70,16 +70,8 @@ const createMachine = async (req, res) => {
 }
 
 const updateMachine = async (req, res) => {
-    const { custom_name, url, ipv4, ipv6, port, is_active } = req.body;
     try {
-        await Machine.update({
-            custom_name: custom_name,
-            url: url,
-            ipv4: ipv4,
-            ipv6: ipv6,
-            port: port,
-            is_active: is_active || false
-        }, {
+        await Machine.update(req.body, {
             where: {
                 id: req.params.id
             }

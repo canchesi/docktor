@@ -31,13 +31,8 @@ const createInfo = async (req, res) => {
 }
 
 const updateInfo = async (req, res) => {
-    const { first_name, last_name, birth_date } = req.body;    
     try {
-        await Info.update({
-            first_name: first_name,
-            last_name: last_name,
-            birth_date: birth_date
-        }, {
+        await Info.update(req.body, {
             where: {
                 id: req.params.id
             }
