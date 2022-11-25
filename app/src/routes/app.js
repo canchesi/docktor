@@ -1,15 +1,23 @@
 // ------- Environment Variables -------
 require('dotenv').config();
+const config = require('../config/config')[process.env.NODE_ENV || 'development'];
 
 // ------- Imports -------
 const app = require('express')();
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const https = require('https');
+const fs = require('fs');
 const home = require('./home');
 
 // ------ Robe da server ------
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json())
-app.listen(3000);
+var server = https.createServer({
+    key: fs.readFileSync(config.key_path),
+    cert: fs.readFileSync(config.cert_path)
+}, app);
+server.listen(config.port); 
 
 // ------ Robe da client ------
 app.use('/', home)

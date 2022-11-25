@@ -8,6 +8,9 @@ var config = {
             database: process.env.DB_NAME_DEV,
             dialect: process.env.DB_DIAL_DEV
         },
+        port: process.env.PORT_DEV,
+        key_path: process.env.KEY_PATH_DEV,
+        cert_path: process.env.CERT_PATH_DEV,
         token: process.env.TOKEN_KEY_DEV
     },
     production: {
@@ -19,6 +22,9 @@ var config = {
             database: process.env.DB_NAME,
             dialect: process.env.DB_DIAL
         },
+        port: process.env.PORT,
+        key_path: process.env.KEY_PATH,
+        cert_path: process.env.CERT_PATH,
         token: process.env.TOKEN_KEY
     }
 }
