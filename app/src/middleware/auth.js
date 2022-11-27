@@ -1,18 +1,18 @@
 const jwt = require("jsonwebtoken");
-const goTo = require('../utils/goTo.js');
-
+const parseCookie = require('../utils/parseCookie.js');
 const config = require("../config/config")[process.env.NODE_ENV || "development"];
+const User = require("../models/userModel");
 
-const verifyToken = (req, res, next) => {
-  	const token = req.body.token || req.query.token || req.headers["x-access-token"];
-	
+const verifyToken = async (req, res, next) => {
+  	const token = req.headers["X-Access-Token"] || parseCookie(req).token;
   	try{
-  	 	req.user = jwt.verify(token, config.token);
-  	} catch (err) {
-		goTo("login");
-  	}
-
-  	next();
+		if (await User.findOne({where: {token: token}}))
+			req.user = jwt.verify(token, config.token);
+		next();
+   	} catch (err) {
+		res.redirect(303, "/login");
+   	}
+   
 };
 
 module.exports = verifyToken;

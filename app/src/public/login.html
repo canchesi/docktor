@@ -3,26 +3,36 @@
     <title>Log In</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
-<body id="a">
-    ab1
-</body>
-
 <script>
-    $(document).ready(function() {
+
+    window.onload = function() {
+        console.log("loaded");
+
+    $('#login').click(function() {
+        var email = $('#email').val();
+        var password = $('#password').val();
+        console.log(email, password);
         $.ajax({
-            url: "http://localhost:3100/api/images/create?fromImage=hello-world",
-            type: "POST",
-            crossDomain: true,
-            //dataType: "json",
+            url: '/login',
+            type: 'POST',
             data: {
-                fromImage: "hello-world"
+                email: email,
+                passwd: password
             },
-            success: (data) => {
-                if (typeof data === "string" ) 
-                    $("#a").append(data);
-                else
-                    $("#a").append(JSON.stringify(data));
+            success: function(data) {
+                window.location.href = '/';
+            },
+            error: function(data) {
+                console.log(data);
             }
         });
     });
+    }
 </script>
+<body id="a">
+    <form method="POST" name="login">
+        <input type="text" id="email" name="email" placeholder="Email">
+        <input type="password" id="password" name="password" placeholder="Password">
+    </form>
+    <button id="login">Login</button>
+</body>
