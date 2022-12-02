@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const getTrueFields = require('../utils/getTrueFields');
 const checkAllFields = require('../utils/checkAllFields');
 const sendError = require('../utils/sendError');
+const { join } = require('path');
 
 const createUser = async (req, res) => {
 
@@ -120,7 +121,7 @@ const deleteUser = async (req, res) => {
     }
 }
 
-const loginUser = (async (req, res) => {
+const loginUser = async (req,  res) => {
     try {
         const { email, passwd } = req.body;
         if (!checkAllFields([email, passwd]))
@@ -143,32 +144,33 @@ const loginUser = (async (req, res) => {
             });
             user.token = token;
             await user.save();
+            res.cookie('token', token, { maxAge: 3600000 }, { secure: true});
             res.status(200).json({ token });
         }
 
     } catch (error) {
-        res.status(501).json(error);
+        sendError(error, res);
+        return;
     }
-})
+}
 
-const logoutUser = (async (req, res) => {
+const logoutUser = async (req, res) => {
     try {
-        const { token } = req.body;
+        const token = req.headers["X-Access-Token"] || req.cookies.token;
         const user = await User.findOne({ where: { token } });
 
-        if (!token)
-            res.status(400).send("Inserire tutti i campi richiesti.")
-        else if (!user)
-            res.status(401).send("Utente non trovato")
+        if (!(user && token))
+            res.redirect(303, '/');
         else {
             user.token = null;
             await user.save();
-            goTo("index.html");
+            res.cookie('token', '', { maxAge: 0 });
+            res.redirect(303, '/');
         }
     } catch (error) {
         res.status(501).json(error);
     }
-})
+}
 
 module.exports = {
     createUser,

@@ -35,14 +35,6 @@ const getGroup = async (req, res) => {
 const createGroup = async (req, res) => {
     try {
         const { name, num_members } = req.body;
-        if (await Group.findOne({
-            where: {
-                name: name
-            }
-        })) {
-            res.status(409).send("Nome già in uso");
-            return;
-        }
         await Group.create({
             name: name,
             num_members: num_members || 0,

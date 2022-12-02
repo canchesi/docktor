@@ -1,6 +1,8 @@
 const checkAllFields = require('../utils/checkAllFields');
 const sequelize = require('../utils/dbConnect');
 const Machine = require('../models/machineModel');
+const Group = require('../models/groupModel');
+const GroupMachineRelation = require('../models/groupMachineModel');
 const { Op } = require('sequelize');
 const getTrueFields = require('../utils/getTrueFields');
 const sendError = require('../utils/sendError');
@@ -40,27 +42,23 @@ const createMachine = async (req, res) => {
             res.status(400).send("Richiesta non valida");
             return;
         }
-        if (await Machine.findOne({
-            where: {
-                [Op.or]: [
-                    { custom_name: custom_name },
-                    { url: url },
-                    { ipv4: ipv4 },
-                    { ipv6: ipv6 }
-                ]
-            }
-        })) {
-            res.status(409).send("Nome o indirizzo già in uso");
-            return;
-        }
-        await Machine.create({
+        const transaction = await sequelize.transaction();
+        const machine = await Machine.create({
             custom_name: custom_name,
             url: url,
             ipv4: ipv4,
             ipv6: ipv6,
             port: port,
             is_active: is_active || false
-        });
+        }, { transaction });
+        console.log(req.headers)
+        await GroupMachineRelation.create({
+            mid: machine.id,
+            gid: (await Group.findOne({
+                where: { name: req.headers.uid, is_private: true } 
+            }, { transaction })).id
+        }, { transaction });
+        await transaction.commit();
         res.status(200).send("Macchina creata con successo");
     } catch (error) {
         console.log(error);
@@ -97,10 +95,49 @@ const deleteMachine = async (req, res) => {
     }
 }
 
+const addGroupToMachine = async (req, res) => {
+    try {
+        const { gid } = req.body;
+        const mid = req.params.id;
+        await GroupMachineRelation.create({
+            mid: mid,
+            gid: gid
+        });
+        res.status(200).send("Gruppo aggiunto con successo");
+    } catch (error) {
+        sendError(error, res);
+        return;
+    }
+}
+
+const removeGroupFromMachine = async (req, res) => {
+    try {
+        const { gid } = req.body;
+        const mid = req.params.id;
+        if (!checkAllFields([gid])) {
+            res.status(400).send("Richiesta non valida");
+            return;
+        }
+        await GroupMachineRelation.destroy({
+            where: {
+                mid: mid,
+                gid: gid
+            }
+        });
+        res.status(200).send("Gruppo rimosso con successo");
+    } catch (error) {
+        sendError(error, res);
+        return;
+    }
+}
+
+
 module.exports = {
     getMachines,
     getMachine,
     createMachine,
     updateMachine,
-    deleteMachine
+    deleteMachine,
+    addGroupToMachine,
+    removeGroupFromMachine
 }

@@ -1,7 +1,9 @@
 const User = require('../models/userModel');
 const Group = require('../models/groupModel');
 const Info = require('../models/infoModel');
+const Machine = require('../models/machineModel');
 const UserGroupRelation = require('../models/userGroupModel');
+const GroupMachineRelation = require('../models/groupMachineModel');
 const { Op } = require('sequelize');
 
 const alreadyExists = (objType, checkType) => async (req, res, next) => {
@@ -56,6 +58,36 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                         [Op.or]: [
                             { uid: req.body.uid || '' ,
                               gid: req.body.gid || Number(req.params.id) || '' },
+                            { id: req.body.id || '' }
+                        ]
+                    }
+                })) != checkType) {
+                    res.status(409).send("Relazione " + (checkType ? " non " : " già ") + " presente");
+                    return;
+                }
+                break;
+            case 'machine':
+                if (Boolean(await Machine.findOne({
+                    where: {
+                        [Op.or]: [
+                            { custom_name: req.body.custom_name || '' },
+                            { url: req.body.url || '' },
+                            { ipv4: req.body.ipv4 || '' },
+                            { ipv6: req.body.ipv6 || '' },
+                            { id: req.params.id || req.body.mid || '' },
+                        ]
+                    }
+                })) != checkType) {
+                    res.status(409).send("Macchina " + (checkType ? " non " : " già ") + " presente");
+                    return;
+                }
+                break;
+            case 'groupMachine':
+                if (Boolean(await GroupMachineRelation.findOne({
+                    where: {
+                        [Op.or]: [
+                            { gid: req.body.gid || Number(req.params.id) || '' ,
+                              mid: req.body.mid || '' },
                             { id: req.body.id || '' }
                         ]
                     }

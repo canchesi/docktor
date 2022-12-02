@@ -1,7 +1,5 @@
-const { join } = require('path');
-
-const goTo = (page, status) => (req, res) => {
-    res.status(status || 200).sendFile(join(__dirname, `../public/${page}.html`));
+const goTo = (status) => (req, res) => {
+    res.redirect(307, page);
 }
 
 module.exports = goTo;
