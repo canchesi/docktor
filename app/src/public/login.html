@@ -1,38 +1,31 @@
 <!DOCTYPE html>
 <head>
     <title>Log In</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/icons@2.1.0/css/all.css">
+    <link rel="stylesheet" href="/style">
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- Personal scirpts -->
+    <script src="/scripts/login" defer></script>
 </head>
-<script>
-
-    window.onload = function() {
-        console.log("loaded");
-
-    $('#login').click(function() {
-        var email = $('#email').val();
-        var password = $('#password').val();
-        console.log(email, password);
-        $.ajax({
-            url: '/login',
-            type: 'POST',
-            data: {
-                email: email,
-                passwd: password
-            },
-            success: function(data) {
-                window.location.href = '/';
-            },
-            error: function(data) {
-                console.log(data);
-            }
-        });
-    });
-    }
-</script>
-<body id="a">
-    <form method="POST" name="login">
-        <input type="text" id="email" name="email" placeholder="Email">
-        <input type="password" id="password" name="password" placeholder="Password">
-    </form>
-    <button id="login">Login</button>
+<body id="body-login">
+    <div class="login-box center-in-page">
+        <div class="card">
+            <div class="login-logo">
+                <a href="/">
+                    <i class="cib-docker"></i>
+                    <b style="font-family: 'Courier New', Courier, monospace;">Docktor</b>
+                </a>
+            </div>
+            <div class="card-body login-card-body">
+                <input type="email" name="email" id="email" class="login-input" placeholder="Email">
+                <input type="password" name="password" id="password" class="login-input" placeholder="Password">
+                <button id="login-button" class="btn btn-info">Accedi</button>
+                <div class="alert alert-danger error-text">
+                    Email e/o password errati.
+                </div>
+            </div>
+        </div>
+    </div>
 </body>

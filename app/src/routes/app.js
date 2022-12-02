@@ -8,6 +8,9 @@ const bodyParser = require('body-parser');
 const https = require('https');
 const fs = require('fs');
 const home = require('./home');
+const templates = require('./templates');
+const scripts = require('./scripts');
+const { join } = require('path');
 
 // ------ Robe da server ------
 app.use(bodyParser.urlencoded({extended: true}));
@@ -24,3 +27,8 @@ app.use('/api', require('./api'));
 
 // ------ Robe da client ------
 app.use('/', home)
+app.use('/templates', templates);
+app.use('/scripts', scripts);
+app.get('/style', (req, res) => {
+    res.sendFile(join(__dirname, '../public/style/style.css'));
+})
