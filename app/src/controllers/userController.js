@@ -165,7 +165,7 @@ const logoutUser = async (req, res) => {
             user.token = null;
             await user.save();
             res.cookie('token', '', { maxAge: 0 });
-            res.redirect(303, '/login');
+            res.redirect(303, '/login?logout=true');
         }
     } catch (error) {
         res.status(501).json(error);
