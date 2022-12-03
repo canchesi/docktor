@@ -4,8 +4,6 @@ const cookieParser = require('cookie-parser');
 const { loginUser, logoutUser } = require('../controllers/userController');
 const { join } = require('path');
 
-// login.html è per prova, ci dovrebbe essere index.html
-
 router.use(cookieParser());
 
 router.get('/', verifyToken,  (req, res) => {
