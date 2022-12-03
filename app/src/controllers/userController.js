@@ -125,29 +125,29 @@ const loginUser = async (req,  res) => {
     try {
         const { email, passwd } = req.body;
         if (!checkAllFields([email, passwd]))
-            res.status(400).send("Inserire tutti i campi richiesti.")   
-        
-        const user = await User.findOne({ where: { email } });
-
-        if (!user)
-            res.status(401).send("Utente non trovato")
-        else if (!bcrypt.compareSync(passwd, user.passwd))
-            res.status(401).send("Password errata")
-        else {
-            const token = jwt.sign({
-                id: user.id,
-                email: user.email
-            },
-            config.token,
-            {
-                expiresIn: '1h'
-            });
-            user.token = token;
-            await user.save();
-            res.cookie('token', token, { maxAge: 3600000 }, { secure: true});
-            res.status(200).json({ token });
+            res.status(400).send("Inserire tutti i campi richiesti.")
+        else { 
+            const user = await User.findOne({ where: { email } });
+            
+            if (!user)
+                res.status(401).send("Utente non trovato")
+            else if (!bcrypt.compareSync(passwd, user.passwd))
+                res.status(401).send("Password errata")
+            else {
+                const token = jwt.sign({
+                    id: user.id,
+                    email: user.email
+                },
+                config.token,
+                {
+                    expiresIn: '1h'
+                });
+                user.token = token;
+                await user.save();
+                res.cookie('token', token, { maxAge: 3600000, secure: true, sameSite: 'None' });
+                res.status(200).json({ token });
+            }
         }
-
     } catch (error) {
         sendError(error, res);
         return;
@@ -160,12 +160,12 @@ const logoutUser = async (req, res) => {
         const user = await User.findOne({ where: { token } });
 
         if (!(user && token))
-            res.redirect(303, '/');
+            res.redirect(303, '/login');
         else {
             user.token = null;
             await user.save();
             res.cookie('token', '', { maxAge: 0 });
-            res.redirect(303, '/');
+            res.redirect(303, '/login');
         }
     } catch (error) {
         res.status(501).json(error);
