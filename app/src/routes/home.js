@@ -3,18 +3,12 @@ const verifyToken = require('../middleware/auth');
 const cookieParser = require('cookie-parser');
 const { loginUser, logoutUser } = require('../controllers/userController');
 const { join } = require('path');
+const goTo = require('../middleware/goTo.js');
 
 router.use(cookieParser());
 
-router.get('/', verifyToken,  (req, res) => {
-    res.sendFile(join(__dirname, '../public/index.html'));
-});
-router.get('/login', (req, res) => {
-    if (!req.cookies.token) 
-        res.sendFile(join(__dirname, '../public/login.html'));
-    else
-        res.redirect(303, '/');
-});
+router.get('/', verifyToken,  goTo(join(__dirname, '../public/index.html'), true));
+router.get('/login', (req, res) => goTo(join(__dirname, '../public/login.html'), !req.cookies.token)(req, res));
 router.get('/logout', logoutUser);
 
 

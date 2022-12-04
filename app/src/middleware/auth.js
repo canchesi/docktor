@@ -23,7 +23,7 @@ const verifyToken = async (req, res, next) => {
 				res.redirect(303, "/login?tokenInvalido=true");
 				break;
 			default:
-				res.redirect(303, "/login?erroreGenerico=true");
+				res.redirect(303, "/login");
 		}
 	} 
 };

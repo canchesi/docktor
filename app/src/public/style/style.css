@@ -1,3 +1,9 @@
+:root {
+    --color-primary: #77afb8;
+}
+
+/* Classi */
+
 .center-in-page {
   position: absolute;
   top: 50%;
@@ -17,14 +23,18 @@
     resize: vertical;
 }
 
-#login-button {
-    width: 21%;
-    height: 40px;
-    color: white;
-    margin-left: 2%;
-    padding: 0;
-    vertical-align: inherit;
+.current-page {
+    background-color: #4f919c;
 }
+
+.title {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: larger;
+    vertical-align: middle;
+}
+
+
+/* AdminLTE modificato */
 
 .login-logo {
     margin: 30px 0 0 0;
@@ -35,8 +45,45 @@
     margin-bottom: 0;
 }
 
+.cib-docker {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.main-sidebar {
+    background-color: var(--color-primary);
+}
+
+[class*="sidebar-light"] .brand-link {
+    text-align: center;
+    border-bottom: 1px solid var(--color-primary);
+    background: var(--color-primary);
+    filter: brightness(80%);
+}
+
+
+/* IDs */
+
+#login-button {
+    width: 21%;
+    height: 40px;
+    color: white;
+    margin-left: 2%;
+    padding: 0;
+    vertical-align: inherit;
+}
+
 #body-login {
-    background-color: #77afb8;
+    background-color: var(--color-primary);
     height: 100%;
     width: 100%;
+}
+
+#login-image {
+    scale: 1.4;
+}
+
+#sidebar-image {
+    scale: 1.4;
+
 }
