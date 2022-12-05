@@ -8,12 +8,37 @@
     <!-- Personal style and scirpts -->
     <link rel="stylesheet" href="/style">
     <script src="/scripts/sidebar" defer></script>
+    <script src="/scripts/dashboard" defer></script>
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
 <body>
     <div id="sidebar"></div>
-    
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-12 mt-3">
+            <div class="info-box" id="machines-info" style="margin-left: 270px;">
+                <span class="info-box-icon bg-info">
+                    <i class="cil-devices"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Macchine totali</span>
+                    <span class="info-box-number"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 mt-3">
+            <div class="info-box" id="containers-info">
+                <span class="info-box-icon bg-primary">
+                    <i class="cib-docker"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Container attivi</span>
+                    <span class="info-box-number">...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+          
 </body>
 
 <script>

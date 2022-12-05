@@ -10,7 +10,7 @@ const sendError = require('../utils/sendError');
 const getMachines = async (req, res) => {
     try {
         const machines = await Machine.findAll({
-            attributes: getTrueFields(req.query) || ['id', 'custom_name', 'ipv4', 'ipv6', 'port', 'is_active']
+            attributes: getTrueFields(req.query) || ['id', 'custom_name', 'url', 'ipv4', 'ipv6', 'port', 'is_active']
         });
         if (machines)
             res.status(200).send(machines);
@@ -51,7 +51,6 @@ const createMachine = async (req, res) => {
             port: port,
             is_active: is_active || false
         }, { transaction });
-        console.log(req.headers)
         await GroupMachineRelation.create({
             mid: machine.id,
             gid: (await Group.findOne({

@@ -1,3 +1,4 @@
+$('.alert').hide();
 let query = new URLSearchParams(location.search);
 if(query.toString() != "") {
     if(query.get("sessioneScaduta")) {
