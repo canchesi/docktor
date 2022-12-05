@@ -1,16 +1,16 @@
 let query = new URLSearchParams(location.search);
 if(query.toString() != "") {
     if(query.get("sessioneScaduta")) {
-        $('.alert-danger').html('Sessione scaduta. Effettua nuovamente il login.')
+        $('.alert').addClass('.alert-danger').html('Sessione scaduta. Effettua nuovamente il login.')
         query.delete("session");
     } else if(query.get("erroreGenerico")) {
-        $('.alert-danger').html('Errore generico. Contatta l\'amministratore.')
+        $('.alert').addClass('.alert-danger').html('Errore generico. Contatta l\'amministratore.')
         query.delete("errore");
     } else if(query.get("tokenInvalido")) {
-        $('.alert-danger').html('Errore nell\'autenticazione. Effettua nuovamente il login.')
+        $('.alert').addClass('.alert-danger').html('Errore nell\'autenticazione. Effettua nuovamente il login.')
         query.delete("token");
     } else if(query.get("logout")) {
-        $('.alert-danger').removeClass('alert-danger').addClass('alert-success').html('Logout effettuato con successo.');
+        $('.alert').addClass('alert-success').html('Logout effettuato con successo.');
         query.delete("logout");
     }
     $('.alert').show();
@@ -40,7 +40,7 @@ $('#login-button').click(function() {
             window.location.href = '/';
         },
         error: function() {
-            $(".alert-danger").html('Email e/o password errati.').show();
+            $(".alert").addClass('alert-danger').html('Email e/o password errati.').show();
         }
     });
 });
