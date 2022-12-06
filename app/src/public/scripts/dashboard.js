@@ -30,9 +30,8 @@ $.ajax({
                     containers += JSON.parse(data).length;
                     $('#containers-info').find('.info-box-number').html(containers);
                 }).catch((id) => {
-                    activeMachines--;
                     $('#machines-info').addClass('bg-warning')
-                    $('#active-machines').html(activeMachines).append('<i class="cib-highly" title="Una o più macchine sono irraggiungibili. Controllare gli indirizzi o le macchine."></i>')
+                    $('#active-machines').html(--activeMachines).append('<i class="cib-highly" title="Una o più macchine sono irraggiungibili. Controllare gli indirizzi o le macchine."></i>')
                     $.ajax({
                         url: '/api/machines/' + id,
                         type: 'PUT',
