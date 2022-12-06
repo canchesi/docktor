@@ -70,11 +70,8 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                 if (Boolean(await Machine.findOne({
                     where: {
                         [Op.or]: [
-                            { custom_name: req.body.custom_name || '' },
-                            { url: req.body.url || '' },
-                            { ipv4: req.body.ipv4 || '' },
-                            { ipv6: req.body.ipv6 || '' },
-                            { id: req.params.id || req.body.mid || '' },
+                            { address: req.body.address || '' },
+                            { id: req.params.id || '' },
                         ]
                     }
                 })) != checkType) {

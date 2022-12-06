@@ -10,19 +10,8 @@ const machine = sequelize.define('machine', {
     custom_name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
     },
-    url: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-    },
-    ipv4: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-    },
-    ipv6: {
+    address: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
@@ -34,7 +23,7 @@ const machine = sequelize.define('machine', {
     is_active: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: false
+        defaultValue: true
     }
 }, {
     timestamps: false,

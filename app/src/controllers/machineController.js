@@ -10,7 +10,7 @@ const sendError = require('../utils/sendError');
 const getMachines = async (req, res) => {
     try {
         const machines = await Machine.findAll({
-            attributes: getTrueFields(req.query) || ['id', 'custom_name', 'url', 'ipv4', 'ipv6', 'port', 'is_active']
+            attributes: getTrueFields(req.query) || ['id', 'custom_name', 'address', 'port', 'is_active']
         });
         if (machines)
             res.status(200).send(machines);
@@ -37,19 +37,17 @@ const getMachine = async (req, res) => {
 
 const createMachine = async (req, res) => {
     try {
-        const { custom_name, url, ipv4, ipv6, port, is_active } = req.body;
-        if (!checkAllFields([custom_name, url, ipv4, ipv6, port])) {
+        const { custom_name, address, port, is_active } = req.body;
+        if (!checkAllFields([custom_name, address, port])) {
             res.status(400).send("Richiesta non valida");
             return;
         }
         const transaction = await sequelize.transaction();
         const machine = await Machine.create({
             custom_name: custom_name,
-            url: url,
-            ipv4: ipv4,
-            ipv6: ipv6,
+            address: address,
             port: port,
-            is_active: is_active || false
+            is_active: is_active || true
         }, { transaction });
         await GroupMachineRelation.create({
             mid: machine.id,
