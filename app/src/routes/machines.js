@@ -10,11 +10,12 @@ const {
 } = require('../controllers/machineController');
 const alreadyExists = require('../middleware/alreadyExists');
 
-
 machines.get('/', getMachines);
-machines.get('/:id', getMachine);
 machines.post('/create', alreadyExists('machine', false), createMachine);
-machines.use(alreadyExists('machine', true));
+
+machines.use('/:id', alreadyExists('machine', true)); // middleware comune
+
+machines.get('/:id', getMachine);
 machines.post('/:id/add', alreadyExists('groupMachine', false), addGroupToMachine);
 machines.put('/:id', updateMachine);
 machines.delete('/:id', deleteMachine);

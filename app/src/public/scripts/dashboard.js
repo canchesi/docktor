@@ -1,63 +1,48 @@
+const getContainers = (address, port, id) => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: 'http://' + address + ':' + port + '/api/containers/json',
+            type: 'GET',
+            success: (data) => {
+                resolve(data);
+            },
+            error: (err) => {
+                reject(id);
+            }
+        });
+    });
+}
+
 $.ajax({
     url: '/api/machines',
     type: 'GET',
     success: (data) => {
-        var containers = 0;
-        const number = $('#containers-info').find('.info-box-number').html();
+        let activeMachines = 0;
+        let containers = 0;
         for (elem of data) {
-            var whereToConnect = [elem.url, elem.ipv4, elem.ipv6] 
-            if (elem.is_active) {
-                $.ajax({
-                    url: 'http://' + whereToConnect[0] + ':' + elem.port + '/api/containers/json',
-                    type: 'GET',
-                    cors: true,
-                    success: (data) => {
-                        if (number != '...')
-                            $('#containers-info').find('.info-box-number').html(number + JSON.parse(data).length);
-                        else
-                            $('#containers-info').find('.info-box-number').html(JSON.parse(data).length);
-                    },
-                    error: (err) => {
-                        $.ajax({
-                            url: 'http://' + whereToConnect[1] + ':' + elem.port + '/api/containers/json',
-                            type: 'GET',
-                            cors: true,
-                            success: (data) => {
-                                if (number != '...')
-                                    $('#containers-info').find('.info-box-number').html(number + JSON.parse(data).length);
-                                else
-                                    $('#containers-info').find('.info-box-number').html(JSON.parse(data).length);
-                            },
-                            error: (err) => {
-                                $.ajax({
-                                    url: 'http://[' + whereToConnect[2] + ']:' + elem.port + '/api/containers/json',
-                                    type: 'GET',
-                                    cors: true,
-                                    success: (data) => {
-                                        if (number != '...')
-                                            $('#containers-info').find('.info-box-number').html(number + JSON.parse(data).length);
-                                        else
-                                            $('#containers-info').find('.info-box-number').html(JSON.parse(data).length);
-                                    },
-                                    error: (err) => {
-                                        $('#containers-info').find('.info-box-number').html('<i class="cib-highly" title="Problemi di raggiungimento delle macchine."></i>').removeClass('bg-info').addClass('bg-warning');
-                                        $.ajax({
-                                            url: '/api/machines/' + elem.id,
-                                            type: 'PUT',
-                                            data: {
-                                                is_active: false
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
+            if (elem.is_active){
+                activeMachines++;
+                getContainers(elem.address, elem.port, elem.id).then((data) => {
+                    containers += JSON.parse(data).length;
+                    $('#containers-info').find('.info-box-number').html(containers);
+                }).catch((id) => {
+                    activeMachines--;
+                    $('#machines-info').addClass('bg-warning')
+                    $('#active-machines').html(activeMachines).append('<i class="cib-highly" title="Una o più macchine sono irraggiungibili. Controllare gli indirizzi o le macchine."></i>')
+                    $.ajax({
+                        url: '/api/machines/' + id,
+                        type: 'PUT',
+                        data: {
+                            is_active: false
+                        },
+                        success: () => {
+                            window.scrollTo(0, 0);
+                        }
+                    });
+                })
             }
         }
-        if (containers)
-            $('#containers-info').find('.info-box-number').html(containers);
-        $('#machines-info').find('.info-box-number').html(data.length);
+        $('#active-machines').html(activeMachines);
+        $('#total-machines').html(data.length);
     }
-});
+})
