@@ -1,4 +1,4 @@
-const getContainers = (address, port, id) => {
+const getContainers = ({ address, port, id }) => {
     return new Promise((resolve, reject) => {
         $.ajax({
             url: 'http://' + address + ':' + port + '/api/containers/json',
@@ -22,7 +22,11 @@ $.ajax({
         for (elem of data) {
             if (elem.is_active){
                 activeMachines++;
-                getContainers(elem.address, elem.port, elem.id).then((data) => {
+                getContainers({
+                    address: elem.address,
+                    port: elem.port,
+                    id: elem.id
+                }).then((data) => {
                     containers += JSON.parse(data).length;
                     $('#containers-info').find('.info-box-number').html(containers);
                 }).catch((id) => {
