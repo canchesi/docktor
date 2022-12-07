@@ -14,9 +14,9 @@
 </head>
 <body>
     <div id="sidebar"></div>
-    <div class="row">
+    <div class="row dashboard-row">
         <div class="col-md-3 col-sm-6 col-xs-12 mt-3">
-            <div class="info-box" id="machines-info" style="margin-left: 270px;">
+            <div class="info-box" id="machines-info">
                 <span class="info-box-icon bg-info">
                     <i class="cil-devices"></i>
                 </span>
@@ -28,16 +28,23 @@
                     <span class="info-box-number" id="total-machines"></span>
                     <span class="info-box-number" id="active-machines"></span>
                 </div>
+                <div class="overlay">
+                    Caricando...
+                </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 col-xs-12 mt-3">
+        <div class="col-md-3 col-sm-6 col-xs-12 mt-3 ">
             <div class="info-box" id="containers-info">
                 <span class="info-box-icon bg-primary">
                     <i class="cib-docker"></i>
                 </span>
                 <div class="info-box-content">
+                    <span class="info-box-text">Container totali</span> 
                     <span class="info-box-text">Container attivi</span>
-                    <span class="info-box-number">0</span>
+                </div>
+                <div class="info-box-content">
+                    <span class="info-box-number" id="total-containers">0</span>
+                    <span class="info-box-number" id="active-containers">0</span>
                 </div>
             </div>
         </div>
