@@ -7,14 +7,17 @@ const app = require('express')();
 const bodyParser = require('body-parser');
 const https = require('https');
 const fs = require('fs');
+const verifyToken = require('../middleware/auth');
 const home = require('./home');
 const templates = require('./templates');
 const scripts = require('./scripts');
 const { join } = require('path');
+const cookieParser = require('cookie-parser');
 
 // ------ Robe da server ------
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json())
+app.use(cookieParser())
 /*var server = https.createServer({
     key: fs.readFileSync(config.key_path),
     cert: fs.readFileSync(config.cert_path)
@@ -23,7 +26,7 @@ app.use(bodyParser.json())
 app.listen(8081)
 
 // ------ Robe da API ------
-app.use('/api', require('./api'));
+app.use('/api', verifyToken, require('./api'));
 
 // ------ Robe da client ------
 app.use('/', home)

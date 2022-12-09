@@ -6,6 +6,7 @@ const GroupMachineRelation = require('../models/groupMachineModel');
 const { Op } = require('sequelize');
 const getTrueFields = require('../utils/getTrueFields');
 const sendError = require('../utils/sendError');
+const UserGroupRelation = require('../models/userGroupModel');
 
 const getMachines = async (req, res) => {
     try {
@@ -33,6 +34,39 @@ const getMachine = async (req, res) => {
         res.status(200).send(machine);
     else
         res.status(404).send("Macchina non trovata");
+}
+
+const getUserMachines = async (req, res) => {
+    try {
+        const userMachines = await GroupMachineRelation.findAll({
+            attributes: ['mid'],
+            where: {
+                gid: {
+                    [Op.in]: (await UserGroupRelation.findAll({
+                        where: {
+                            uid: req.user.id
+                        }
+                    })).map(elem => elem.gid)
+                }
+            }
+        });
+
+        const machines = await Machine.findAll({
+            attributes: getTrueFields(req.query) || ['id', 'custom_name', 'address', 'port', 'is_active'],
+            where: {
+                id:  {
+                    [Op.in]: userMachines.map(elem => elem.mid)
+                }
+            }
+        });
+        if (machines)
+            res.status(200).send(machines);
+        else
+            res.status(404).send("Nessuna macchina trovata");
+    } catch (error) {
+        sendError(error, res);
+        return;
+    }
 }
 
 const createMachine = async (req, res) => {
@@ -132,6 +166,7 @@ const removeGroupFromMachine = async (req, res) => {
 module.exports = {
     getMachines,
     getMachine,
+    getUserMachines,
     createMachine,
     updateMachine,
     deleteMachine,

@@ -15,7 +15,7 @@ const getContainers = ({ address, port, id }) => {
 (() => {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: '/api/machines',
+            url: '/api/machines/user',
             type: 'GET',
             success: (data) => {
                 let knownActiveMachines = 0;

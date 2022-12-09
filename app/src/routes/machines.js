@@ -2,6 +2,7 @@ const machines = require('express').Router();
 const {
     getMachines,
     getMachine,
+    getUserMachines,
     createMachine,
     updateMachine,
     deleteMachine,
@@ -11,6 +12,7 @@ const {
 const alreadyExists = require('../middleware/alreadyExists');
 
 machines.get('/', getMachines);
+machines.get('/user', getUserMachines);
 machines.post('/create', alreadyExists('machine', false), createMachine);
 
 machines.use('/:id', alreadyExists('machine', true)); // middleware comune
