@@ -99,3 +99,10 @@
 #user-panel {
     border-bottom: none
 }
+
+#check {
+    position: absolute;
+    left: 50%;
+    scale: 4;
+    filter: opacity(0.7);
+}

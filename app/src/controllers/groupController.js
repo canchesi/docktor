@@ -32,6 +32,37 @@ const getGroup = async (req, res) => {
         res.status(404).send("Gruppo non trovato");
 }
 
+const getUserGroups = async (req, res) => {
+    try {
+        var groups = await UserGroupRelation.findAll({
+            where: {
+                uid: req.user.id
+            },
+            attributes: ['gid']
+        })
+
+        if(groups)
+            var groups = await Group.findAll({
+                where: {
+                    id: groups.map(g => g.gid)
+                },
+                attributes: getTrueFields(req.query) || ['id', 'name', 'num_members', 'is_private']
+            });
+        else {
+            res.status(404).send("Nessun gruppo trovato");
+            return;
+        }
+
+        if (groups)
+            res.status(200).send(groups);
+        else
+            res.status(404).send("Nessun gruppo trovato");
+    } catch (error) {
+        sendError(error, res);
+        return;
+    }
+}
+
 const createGroup = async (req, res) => {
     try {
         const { name, num_members } = req.body;
@@ -156,6 +187,7 @@ const removeUserFromGroup = async (req, res) => {
 module.exports = {
     getGroups,
     getGroup,
+    getUserGroups,
     createGroup,
     updateGroup,
     deleteGroup,

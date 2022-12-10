@@ -106,3 +106,20 @@ $('#access-save').click(() => {
     }
 })
 
+// Popolazioe gruppi
+$.ajax({
+    url: '/api/groups/this',
+    type: 'GET',
+    success: (data) => {
+        const private = data.pop((el) => el.is_private)
+        $('#groups').append('<tr style="background: var(--color-primary);"><td>' + private.id + '</td><td>Privato</td><td>' + private.num_members + '</td></tr>')
+        data.forEach((el) => {
+            $('#groups').append('<tr><td>' + el.id + '</td><td>' + el.name + '</td><td>' + el.num_members + '</td></tr>')
+        })
+        if($('#group-table').height() > $('#group-table').parent().height())
+            $('#group-table').parent().attr('style', 'overflow-y: scroll;')
+        else if($('#group-table').height() < $('#group-table').parent().height() / 1.33)
+            $('#group-table').parent().attr('style', 'position: relative').append('<i class="fa-solid fa-check" id="check" title="Non ci sono pi\ gruppi" style="top:' + ((1 + ($('#group-table').height() / $('#group-table').parent().height())) * 50) + '%"></i>')
+    }
+
+})
