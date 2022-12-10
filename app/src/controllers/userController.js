@@ -2,6 +2,7 @@ const config = require('../config/config')[process.env.NODE_ENV || 'development'
 const sequelize = require('../utils/dbConnect');
 const User = require('../models/userModel');
 const Group = require('../models/groupModel');
+const Info = require('../models/infoModel');
 const UserGroupRelation = require('../models/userGroupModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -9,6 +10,7 @@ const getTrueFields = require('../utils/getTrueFields');
 const checkAllFields = require('../utils/checkAllFields');
 const sendError = require('../utils/sendError');
 const { join } = require('path');
+const GroupMachineRelation = require('../models/groupMachineModel');
 
 const createUser = async (req, res) => {
 
@@ -44,13 +46,12 @@ const createUser = async (req, res) => {
 }
 
 const getUser = async(req, res) => {
-
-    const id = req.params.id;
+    const id = req.params.id || req.user.id;
     const user = await User.findOne({
         where: {
             id: id
         }, 
-        attributes: getTrueFields(req.query)
+        attributes: getTrueFields(req.query) || ['id', 'email']
     });
 
     if (user)
@@ -70,13 +71,18 @@ const getUsers = async (req, res) => {
         res.status(404).send("Nessun utente trovato");
 }
 
-const updateUser = async (req, res) => {
-    
+const updateUser = async (req, res) => { 
+    const transaction = await sequelize.transaction();
+
     try {
-        const transaction = await sequelize.transaction();
-            await User.update(req.body, {
+        if (req.body.passwd)
+            var passwd = bcrypt.hashSync(req.body.passwd, await bcrypt.genSalt(10));
+        await User.update({
+                email: req.body.email || req.user.email,
+                passwd: passwd || req.user.passwd
+            }, {
                 where: {
-                    id: req.params.id
+                    id: req.params.id || req.user.id
                 }
             }, { transaction });
         await transaction.commit();
@@ -89,11 +95,32 @@ const updateUser = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
-        const transaction = await sequelize.transaction();
+        if (req.params.id == 1)
+            throw new Error("Non puoi cancellare l'utente di default");
+        const group = await Group.findOne({
+            where: {
+                name: req.params.id,
+                is_private: true
+            }
+        });
         await UserGroupRelation.destroy({
             where: {
                 uid: req.params.id
+            }
+        }, { transaction });
+        for (rel of await UserGroupRelation.findAll({ where: { uid: req.params.id }, attributes: ['gid'] })) {
+            await Group.decrement('num_members', {
+                by: 1,
+                where: {
+                    id: rel.gid
+                }
+            }, { transaction });
+        }
+        await GroupMachineRelation.destroy({
+            where: {
+                gid: group.id
             }
         }, { transaction });
         await User.destroy({
@@ -103,13 +130,13 @@ const deleteUser = async (req, res) => {
         }, { transaction });
         await Group.destroy({
             where: {
-                name: req.params.id
+                name: req.params.id,
+                is_private: true
             }
         }, { transaction });
-        await Group.decrement('num_members', {
-            by: 1,
+        await Info.destroy({
             where: {
-                name: req.params.id
+                uid: req.params.id
             }
         }, { transaction });
         await transaction.commit();
@@ -172,6 +199,20 @@ const logoutUser = async (req, res) => {
     }
 }
 
+const checkPassword = async (req, res) => {
+    try {
+        const { passwd } = req.body;
+        const user = await User.findOne({ where: { id: req.user.id } });
+        if (user)
+            res.status(200).send(bcrypt.compareSync(passwd, user.passwd));
+        else
+            res.status(404).send("Utente non trovato");
+    } catch (error) {
+        sendError(error, res);
+        return;
+    }
+}
+
 module.exports = {
     createUser,
     getUser,
@@ -179,5 +220,6 @@ module.exports = {
     updateUser,
     deleteUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    checkPassword
 }

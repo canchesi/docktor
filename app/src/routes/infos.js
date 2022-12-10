@@ -8,6 +8,7 @@ const {
 } = require('../controllers/infoController');
 const alreadyExists = require('../middleware/alreadyExists');
 
+infos.get('/this', getInfo);
 infos.get('/:id', getInfo);
 infos.post('/create', alreadyExists('info'), createInfo);
 infos.put('/:id', updateInfo);
