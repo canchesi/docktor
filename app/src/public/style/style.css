@@ -1,5 +1,6 @@
 :root {
     --color-primary: #77afb8;
+    --color-secondary: #4f919c;
 }
 
 /* Classi */
@@ -33,6 +34,14 @@
     vertical-align: middle;
 }
 
+.dashboard-row {
+    margin-left: 270px;
+    margin-right: 0;
+}
+
+.profile-row {
+    margin-left: 270px;
+}
 
 /* AdminLTE modificato */
 
@@ -61,10 +70,6 @@
     filter: brightness(80%);
 }
 
-.dashboard-row {
-    margin-left: 270px;
-}
-
 /* IDs */
 
 #login-button {
@@ -89,4 +94,8 @@
 #sidebar-image {
     scale: 1.4;
 
+}
+
+#user-panel {
+    border-bottom: none
 }

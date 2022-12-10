@@ -7,7 +7,11 @@ const sendError = (error, res) => {
             case 1142:
                 res.status(401).send("Non hai i permessi per eseguire questa operazione");
                 return;
-            default:
+        }
+    else if (error.message)
+        switch (error.message) {
+            case "Non puoi cancellare l'utente di default":
+                res.status(401).send("Non puoi cancellare l'utente di default");
                 return;
         }
     res.status(501).send("Errore durante l'operazione");
