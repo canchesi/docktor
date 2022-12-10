@@ -2,10 +2,14 @@ const sequelize = require('../utils/dbConnect');
 const { DataTypes } = require('sequelize');
 
 const info = sequelize.define('info', {
-    id: {
+    uid: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        },
+        primaryKey: true
     },
     first_name: {
         type: DataTypes.STRING,
@@ -15,17 +19,13 @@ const info = sequelize.define('info', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    gender: {
+        type: DataTypes.ENUM('M', 'F', 'NB'),
+        allowNull: false
+    },
     birth_date: {
         type: DataTypes.DATE,
         allowNull: false
-    },
-    uid: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'users',
-            key: 'id'
-        }
     }
 }, {
     timestamps: false,
