@@ -111,7 +111,7 @@ $.ajax({
     url: '/api/groups/this',
     type: 'GET',
     success: (data) => {
-        const private = data.pop((el) => el.is_private)
+        const private = data.splice(data.indexOf(data.find((el) => el.is_private)), 1)[0]
         $('#groups').append('<tr style="background: var(--color-primary);"><td>' + private.id + '</td><td>Privato</td><td>' + private.num_members + '</td></tr>')
         data.forEach((el) => {
             $('#groups').append('<tr><td>' + el.id + '</td><td>' + el.name + '</td><td>' + el.num_members + '</td></tr>')
