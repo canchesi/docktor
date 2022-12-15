@@ -7,6 +7,7 @@ const { Op } = require('sequelize');
 const getTrueFields = require('../utils/getTrueFields');
 const sendError = require('../utils/sendError');
 const UserGroupRelation = require('../models/userGroupModel');
+const goTo = require('../middleware/goTo');
 
 const getMachines = async (req, res) => {
     try {
@@ -38,27 +39,63 @@ const getMachine = async (req, res) => {
 
 const getUserMachines = async (req, res) => {
     try {
-        const userMachines = await GroupMachineRelation.findAll({
-            attributes: ['mid'],
-            where: {
-                gid: {
-                    [Op.in]: (await UserGroupRelation.findAll({
-                        where: {
-                            uid: req.user.id
-                        }
-                    })).map(elem => elem.gid)
-                }
-            }
-        });
+        var machines;
+        if (req.query.divided == true) {
+            machines = [];
+            const userGroups = await Group.findAll({
+                where: {
+                    id: {
+                        [Op.in]: (await UserGroupRelation.findAll({
+                            where: {
+                                uid: req.user.id
+                            }
+                        })).map(elem => elem.gid)
+                    }
+                },
+                attributes: ['id', 'name', 'is_private']
+            })
 
-        const machines = await Machine.findAll({
-            attributes: getTrueFields(req.query) || ['id', 'custom_name', 'address', 'port', 'is_active'],
-            where: {
-                id:  {
-                    [Op.in]: userMachines.map(elem => elem.mid)
+            for (elem of userGroups)
+                machines.push({
+                    "id": elem.id,
+                    "name": elem.name,
+                    "is_private": elem.is_private,
+                    "machines": await Machine.findAll({
+                        attributes: ['id', 'custom_name', 'address', 'port', 'is_active'],
+                        where: {
+                            id: {
+                                [Op.in]: (await GroupMachineRelation.findAll({
+                                    where: {
+                                        gid: elem.id
+                                    }
+                                })).map(elem => elem.mid)
+                            }
+                        }
+                    })
+                });
+        } else {
+            var userMachines = Object.values(await GroupMachineRelation.findAll({
+                attributes: ['mid'],
+                where: {
+                    gid: {
+                        [Op.in]: (await UserGroupRelation.findAll({
+                            where: {
+                                uid:  req.user.id
+                            }
+                        })).map(elem => elem.gid)
+                    }
                 }
-            }
-        });
+            }));
+
+            machines = await Machine.findAll({
+                attributes: getTrueFields(req.query) || ['id', 'custom_name', 'address', 'port', 'is_active'],
+                where: {
+                    id:  {
+                        [Op.in]: userMachines.map(elem => elem.mid)
+                    }
+                }
+            });
+        }
         if (machines)
             res.status(200).send(machines);
         else
@@ -162,6 +199,23 @@ const removeGroupFromMachine = async (req, res) => {
     }
 }
 
+const checkUserMachine = async (req, res, next) => {
+    if (await GroupMachineRelation.findOne({
+        where: {
+            gid: {
+                [Op.in]: (await UserGroupRelation.findAll({
+                    where: {
+                        uid: req.user.id
+                    }
+                })).map(elem => elem.gid)
+            },
+            mid: req.params.id
+        }
+    }))
+        next();
+    else
+        goTo('/unauthorizedAccessToMachine', true)(req, res);
+}
 
 module.exports = {
     getMachines,
@@ -171,5 +225,6 @@ module.exports = {
     updateMachine,
     deleteMachine,
     addGroupToMachine,
-    removeGroupFromMachine
+    removeGroupFromMachine,
+    checkUserMachine
 }
