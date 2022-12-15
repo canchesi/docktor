@@ -17,13 +17,13 @@ const verifyToken = async (req, res, next) => {
 		res.cookie("token", "", {maxAge: 0});
 		switch (err.message) {
 			case "Token scaduto":
-				res.redirect(303, "/login?sessioneScaduta=true");
+				res.redirect(307, "/login?sessioneScaduta=true");
 				break;
 			case "Token non valido":
-				res.redirect(303, "/login?tokenInvalido=true");
+				res.redirect(307, "/login?tokenInvalido=true");
 				break;
 			default:
-				res.redirect(303, "/login");
+				res.redirect(307, "/login");
 		}
 	} 
 };
