@@ -42,9 +42,7 @@ const getContainers = ({ address, port, id }) => {
                             if(activeMachines == knownActiveMachines)
                                 resolve();
                         }).catch((id) => {
-                            $('#machines-info').addClass('bg-warning')
-                            if($('#active-machines').html().indexOf('cib-highly') == -1)
-                                $('#active-machines').append('<i class="cib-highly" title="Una o più macchine sono irraggiungibili. Controllare gli indirizzi o le macchine."></i>')
+                            $('#machines-info').addClass('bg-warning').attr('title', 'Una o pi\u00F9 macchine non sono raggiungibili. Controllare gli indirizzi IP e le porte, o in alternativa la connessione con queste.')
                             $.ajax({
                                 url: '/api/machines/' + id,
                                 type: 'PUT',
