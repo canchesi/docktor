@@ -15,4 +15,56 @@
 </head>
 <body>
     <div id="sidebar"></div>
+    <div class="dashboard-row mt-4 mr-3" >
+        <div class="card card-info" style="padding: 0;">
+            <div class="card-header">
+                <h3 class="card-title">Informazioni</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="form-group col-1">
+                        <label for="id">ID</label>
+                        <input type="text" class="form-control" id="id" disabled>
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="name">Nome macchina</label>
+                        <input type="text" class="form-control" id="name" placeholder="Nome">
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="address">Indirizzo</label>
+                        <input type="text" class="form-control" id="address" placeholder="URL, IPv4 o IPv6">
+                    </div>
+                    <div class="form-group col-3">
+                        <label for="port">Porta</label>
+                        <input type="text" inputmode="numeric" class="form-control" id="port" placeholder="Es.: 8080" >
+                    </div>
+                </div>
+                <button class="btn bg-olive" id="save">Aggiorna</button>    
+                <input type="checkbox" id="is_active" class="ml-3">
+                <label for="is_active" class="ml-2">Macchina attiva</label>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-row mt-4 mr-3">
+        <div class="card card-info col-6" id="card-containers" style="padding: 0;">
+            <div class="card-header">
+                <h3 class="card-title" style="padding-top: 0.5rem;">Containers</h3>
+                <button class="btn bg-info btn-refresh float-right"><i class="fa-solid fa-refresh"></i></button>
+            </div>
+            <div class="card-body" id="div-table" style="padding: 0">
+                <table class="table table-bordered table-hover" id="table-containers" style="text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Status</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                    </tbody>
+                </table>    
+            </div>
+        </div>
+    </div>
 </body>

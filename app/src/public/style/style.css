@@ -4,6 +4,14 @@
     --color-light-primary: #b3d4d9;
 }
 
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#table td {
+    vertical-align: middle;
+}
+
 /* Classi */
 
 .center-in-page {
