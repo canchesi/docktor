@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <head>
     <title>Docktor</title>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" defer></script>
     <!-- Style and scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/icons@2.1.0/css/all.css">
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
     <script src="https://kit.fontawesome.com/116143211a.js" crossorigin="anonymous"></script>
     <!-- Personal style and scirpts -->
     <link rel="stylesheet" href="/style">
     <script src="/scripts/sidebar" defer></script>
     <script src="/scripts/machine" defer></script>
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
 <body>
     <div id="sidebar"></div>
@@ -45,11 +46,11 @@
             </div>
         </div>
     </div>
-    <div class="dashboard-row mt-4 mr-3">
-        <div class="card card-info col-6" id="card-containers" style="padding: 0;">
+    <div class="row mt-4 mr-3" style="margin-left: 0;">
+        <div class="dashboard-row card card-info col-5" id="card-containers" style="padding: 0;">
             <div class="card-header">
                 <h3 class="card-title" style="padding-top: 0.5rem;">Containers</h3>
-                <button class="btn bg-info btn-refresh float-right"><i class="fa-solid fa-refresh"></i></button>
+                <button class="btn bg-info float-right" id="container-refresh"><i class="fa-solid fa-refresh"></i></button>
             </div>
             <div class="card-body" id="div-table" style="padding: 0">
                 <table class="table table-bordered table-hover" id="table-containers" style="text-align: center;">
@@ -64,6 +65,43 @@
                     <tbody id="table">
                     </tbody>
                 </table>    
+            </div>
+        </div>
+        <div class="card card-info col-5 ml-auto" id="card-volume" style="padding: 0;">
+            <div class="card-header">
+                <h3 class="card-title" style="padding-top: 0.5rem;">Volumi</h3>
+                <button class="btn bg-info btn-refresh float-right" id="volume-refresh"><i class="fa-solid fa-refresh"></i></button>
+            </div>
+            <div class="card-body" id="div-table-volumes" style="padding: 0">
+                <table class="table table-bordered table-hover" id="table-volumes" style="text-align: center; table-layout: fixed;">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>ID/HostPath</th>
+                            <th>Mount point</th>
+                            <th>Container</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="volume-table">
+                    </tbody>
+                </table>    
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="container-delete-modal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Sicuro di voler eliminare questo container?</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Eliminando il container verranno eliminati anche tutti i volumi associati.</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" id="cancel-button-container-modal">Annulla</button>
+                    <button type="button" class="btn btn-danger" id="confirm-button-container-modal">Elimina</button>
+                </div>
             </div>
         </div>
     </div>
