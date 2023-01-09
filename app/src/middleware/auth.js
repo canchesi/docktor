@@ -16,7 +16,7 @@ const verifyToken = async (req, res, next) => {
    	} catch (err) {
 		res.cookie("token", "", {maxAge: 0});
 		switch (err.message) {
-			case "Token scaduto":
+			case "jwt expired" || "Token scaduto":
 				res.redirect(307, "/login?sessioneScaduta=true");
 				break;
 			case "Token non valido":
