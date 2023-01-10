@@ -1,3 +1,5 @@
+//const goTo = require("../../middleware/goTo");
+
 const checkPort = (port) => {
     return Boolean(port.match(/^[0-9]{1,5}$/)) && port > 0 && port < 65536;
 }
@@ -85,8 +87,8 @@ const containerFullfill = (data) => {
             return a.Id.localeCompare(b.Id)}))
         $('#table').append('<tr> \
             <td>' + container.Id.substring(0, 16) + '</td> \
-            <td>' + container.Names[0].replace('/', '') + '</td> \
-            <td>' + container.State + ' - ' + container.Status + '</td> \
+            <td><i class="fa-solid fa-pencil edit" style="margin-right: 4px"></i>' + container.Names[0].replace('/', '') + '</td> \
+            <td class="container-state">' + container.Status + '</td> \
             <td>' + buttons[container.State] + '</td></tr>')
 
     $('#check').remove();
@@ -185,8 +187,7 @@ const containerButtonsActions = () => {
                 $.ajax({
                     url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/' + id,
                     type: 'DELETE'
-                })
-            }).then(() => {
+                }).then(() => {
                 for (volume of volumes)
                     $.ajax({
                         url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/' + volume.Name + '?force=1',
@@ -196,13 +197,13 @@ const containerButtonsActions = () => {
                                 location.reload()
                         }
                     })
+                })
             })
         })
     })
 }
 
 const volumeButtonsActions = () => {
-    console.log(document.getElementsByClassName('volume-delete')); 
     $('.volume-delete').click(function () {
         const id = $(this).parent().parent().children()[1].innerHTML;
         $.ajax({
@@ -221,6 +222,10 @@ $('#container-refresh').click(() => {
         containerFullfill(data);
     }).then(() => {
         containerButtonsActions();
+        getVolumes(volBindFullfill)
+        .then(() => {
+            volumeButtonsActions();
+        })
     })
 });
 
@@ -237,6 +242,7 @@ $('#volume-refresh').click(() => {
 });
 
 (() => {
+
     return new Promise((resolve, reject) => {
         $.ajax({
             url: '/api/machines/' + window.location.pathname.split('/')[2],
@@ -264,6 +270,36 @@ $('#volume-refresh').click(() => {
         volBindFullfill(data, true);
     }).then(() => {
         containerButtonsActions();
+    const query = new URLSearchParams(window.location.search);
+    if(query.get('invalidContainerName')) {
+        $('#table').children().filter((index, elem) => {
+            return elem.children[1].innerText == query.get('invalidContainerName')
+        }).addClass('table-danger');
+        query.delete('invalidContainerName');
+        history.replaceState(null, null, location.pathname);
+    }
+        $('.edit').click(function () {
+            $(this).attr('hidden', 'true')
+            $(this).parent().attr('contenteditable', 'true');
+            $(this).parent().focus();
+
+            $(this).parent().keypress(function (e) {
+                if (e.which == 13) {
+                    $(this).children(".edit").attr('hidden', 'false')
+                    $(this).removeAttr('contenteditable');
+                    $.ajax({
+                        url:"http://" + $('#address').val() + ":" + $('#port').val() + "/api/containers/" + $(this).parent().children()[0].innerHTML + "/rename?name=" + $(this).parent().children()[1].innerText,
+                        type: 'POST',
+                        success: () => {
+                            location.reload();
+                        },
+                        error: () => {
+                            location.href = '/machines/' + $('#id').val() + '?invalidContainerName=' + $(this).parent().children()[1].innerText
+                        }
+                    })
+                }
+            })
+        })
         getVolumes(volBindFullfill)
         .then(() => {
             volumeButtonsActions();
