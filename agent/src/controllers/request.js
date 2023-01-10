@@ -6,7 +6,7 @@ const request = async (req, res) => {
     const body = JSON.stringify(req.body);
     const options = {
         socketPath: '/run/docker.sock',
-        path: createPath(req.originalUrl.replace('/api', ''), req.query),
+        path: req.originalUrl.replace('/api',''),
         method: req.method,
         verbose: true,
         headers: req.method === 'POST' || req.method === 'PUT' ? {
