@@ -229,6 +229,28 @@ $('#container-refresh').click(() => {
     })
 });
 
+$('#container-create').click(() => {
+    $('#container-create-modal').modal('show');
+    $('#cancel-button-container-create-modal').click(() => {
+        $('#container-create-modal').modal('hide');
+    })
+    $('#avanzate').click(() => {
+        $('#avanzate').val($('#avanzate').val() == 'true' ? 'false' : 'true');
+        if ($('#avanzate').val() == 'true')
+            $('.avanzata').show();
+        else
+            $('.avanzata').hide();
+    })
+    $('#autoremove').click(() => {
+        $('#autoremove').toggleClass('btn-success');
+        $('#autoremove').toggleClass('btn-danger');
+        $('#autoremove').val($('#autoremove').val() == 'true' ? 'false' : 'true');
+    })
+    $('#confirm-button-container-create-modal').click(() => {
+        
+    })
+})
+
 $('#volume-refresh').click(() => {
     getContainers((data) => {
         $('#volume-table').empty();
@@ -240,6 +262,7 @@ $('#volume-refresh').click(() => {
         })
     })
 });
+
 
 (() => {
 

@@ -50,6 +50,7 @@
         <div class="dashboard-row card card-info col-5" id="card-containers" style="padding: 0;">
             <div class="card-header">
                 <h3 class="card-title" style="padding-top: 0.5rem;">Containers</h3>
+                <button class="btn bg-info float-right" id="container-create"><i class="fa-solid fa-plus"></i></button>
                 <button class="btn bg-info float-right" id="container-refresh"><i class="fa-solid fa-refresh"></i></button>
             </div>
             <div class="card-body" id="div-table" style="padding: 0">
@@ -70,6 +71,7 @@
         <div class="card card-info col-5 ml-auto" id="card-volume" style="padding: 0;">
             <div class="card-header">
                 <h3 class="card-title" style="padding-top: 0.5rem;">Volumi</h3>
+                <button class="btn bg-info btn-create float-right" id="volume-create"><i class="fa-solid fa-plus"></i></button>
                 <button class="btn bg-info btn-refresh float-right" id="volume-refresh"><i class="fa-solid fa-refresh"></i></button>
             </div>
             <div class="card-body" id="div-table-volumes" style="padding: 0">
@@ -89,6 +91,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Modals -->
     <div class="modal fade" id="container-delete-modal" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -101,6 +105,60 @@
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" id="cancel-button-container-modal">Annulla</button>
                     <button type="button" class="btn btn-danger" id="confirm-button-container-modal">Elimina</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="container-create-modal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Crea un nuovo container</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-6" id="image">
+                            <label for="immagine">Immagine</label>
+                            <input type="text" class="form-control" id="immagine" placeholder="Immagine">
+                        </div>
+                        <div class="form-group col-6" id="nome">
+                            <label for="nome">Nome container</label>
+                            <input type="text" class="form-control" id="nome" placeholder="Nome">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-3">
+                            <label for="porta">Porte</label>
+                            <input type="text" class="form-control" id="porte" placeholder="Es.: 80:8080, 22:222">
+                        </div>
+                        <div class="form-group col-5">
+                            <label for="volumi">Volumi e bindings</label>
+                            <input type="text" class="form-control" id="volumi" placeholder="Es.: Volume1:/home, /var:/var">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="comandi">Comandi</label>
+                            <input type="text" class="form-control" id="comandi" placeholder="Es.: ls; pwd">
+                        </div>
+                        <div class="form-group col-12">
+                            <button class="btn btn-secondary col-12" value=false id="avanzate">Avanzate</button>
+                        </div>
+                        <div class="form-group col-6 avanzata">
+                            <label for="cpu">CPU</label>
+                            <input type="text" class="form-control" id="cpu" placeholder="Es.: 0.5">
+                        </div>
+                        <div class="form-group col-6 avanzata">
+                            <label for="ram">RAM</label>
+                            <input type="text" class="form-control" id="ram" placeholder="Es.: 512m">
+                        </div>
+                        <div class="form-group col-3 avanzata">
+                            <button class="btn btn-danger" value="false" title="Autorimozione del container dopo lo stop." id="autoremove">Autorimozione</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" id="cancel-button-container-create-modal">Annulla</button>
+                    <button type="button" class="btn bg-olive" id="confirm-button-container-create-modal">Crea</button>
                 </div>
             </div>
         </div>

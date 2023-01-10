@@ -8,6 +8,10 @@ body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
+textarea {
+    resize: none;
+}
+
 #table td {
     vertical-align: middle;
 }
@@ -67,6 +71,10 @@ body {
 
 .machine-btn:hover {
     background-color: lightgrey;
+}
+
+.avanzata {
+    display: none;
 }
 
 /* AdminLTE modificato */
