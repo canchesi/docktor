@@ -129,7 +129,6 @@ const createMachine = async (req, res) => {
         await transaction.commit();
         res.status(200).send("Macchina creata con successo");
     } catch (error) {
-        console.log(error);
         sendError(error, res);
         return;
     }

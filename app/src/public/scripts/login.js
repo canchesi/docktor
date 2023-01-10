@@ -1,6 +1,5 @@
 $('.alert').hide();
 let query = new URLSearchParams(location.search);
-console.log(query.toString());
 if(query.toString() != "") {
     if(query.get("sessioneScaduta")) {
         $('.alert').addClass('alert-danger').html('Sessione scaduta. Effettua nuovamente il login.')
