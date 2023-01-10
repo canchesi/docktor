@@ -230,8 +230,9 @@ $('#volume-refresh').click(() => {
         volBindFullfill(data, true);
     }).then(() => {
         getVolumes(volBindFullfill)
-    }).then(() => {
-        volumeButtonsActions();
+        .then(() => {
+            volumeButtonsActions();
+        })
     })
 });
 
