@@ -126,33 +126,45 @@
                             <label for="nome">Nome container</label>
                             <input type="text" class="form-control" id="nome" placeholder="Nome">
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-3">
                             <label for="porta">Porte</label>
-                            <input type="text" class="form-control" id="porte" placeholder="Es.: 80:8080, 22:222">
+                            <input type="text" class="form-control" id="porte" placeholder="80:8080/tcp, 22/tcp">
                         </div>
                         <div class="form-group col-5">
                             <label for="volumi">Volumi e bindings</label>
-                            <input type="text" class="form-control" id="volumi" placeholder="Es.: Volume1:/home, /var:/var">
+                            <input type="text" class="form-control" id="volumi" placeholder="Volume1:/home, /var:/var">
                         </div>
                         <div class="form-group col-4">
                             <label for="comandi">Comandi</label>
-                            <input type="text" class="form-control" id="comandi" placeholder="Es.: ls; pwd">
+                            <input type="text" class="form-control" id="comandi" placeholder="ls; pwd">
                         </div>
                         <div class="form-group col-12">
                             <button class="btn btn-secondary col-12" value=false id="avanzate">Avanzate</button>
                         </div>
                         <div class="form-group col-6 avanzata">
-                            <label for="cpu">CPU</label>
-                            <input type="text" class="form-control" id="cpu" placeholder="Es.: 0.5">
+                            <label for="cpu" title="Percentuale di singolo core da usare">CPU</label>
+                            <input type="number" class="form-control" id="cpu" value="1" min="1">
                         </div>
                         <div class="form-group col-6 avanzata">
-                            <label for="ram">RAM</label>
-                            <input type="text" class="form-control" id="ram" placeholder="Es.: 512m">
+                            <label for="ram" title="Mebibytes di memoria centrale allocata">Memoria (MiB)</label>
+                            <input type="number" class="form-control" id="ram" value="512">
                         </div>
-                        <div class="form-group col-3 avanzata">
-                            <button class="btn btn-danger" value="false" title="Autorimozione del container dopo lo stop." id="autoremove">Autorimozione</button>
+                        <div class="form-group col-4 avanzata">
+                            <label for="restart">Politiche di riavvio</label>
+                            <select class="form-control" id="restart">
+                                <option value="no">No</option>
+                                <option value="always">Always</option>
+                                <option value="on-failure">On failure</option>
+                                <option value="unless-stopped">Unless stopped</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-4 avanzata">
+                            <label for="autoremove">&nbsp;</label>
+                            <button class="btn btn-danger col-12" value="false" title="Autorimozione del container dopo lo stop." id="autoremove">Autorimozione</button>
+                        </div>
+                        <div class="form-group col-4 avanzata">
+                            <label for="networking">&nbsp;</label>
+                            <button class="btn btn-success col-12" value="true" title="Disabilitazione del networking." id="networking">Networking</button>
                         </div>
                     </div>
                 </div>

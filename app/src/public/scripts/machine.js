@@ -48,7 +48,7 @@ const checkIPv6 = (ip) => {
     return Boolean(ip.match(/^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/));       
 }
 
-const getContainers = (callback) => {
+const getContainersFromHost = (callback) => {
     return new Promise((resolve, reject) => {
         $.ajax({
             url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/json?all=1',
@@ -64,7 +64,7 @@ const getContainers = (callback) => {
     })
 }
 
-const getVolumes = (callback) => {
+const getVolumesFromHost= (callback) => {
     return new Promise((resolve, reject) => {
         $.ajax({
             url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes',
@@ -75,6 +75,75 @@ const getVolumes = (callback) => {
             }
         })
     })
+}
+
+const getPorts = () => {
+    var input = $('#porte').val();
+    var ports = {
+        "exposed": {},
+        "published": {}
+    };
+    if (input != "") {
+        input = input.split(', ');
+        if (input != undefined && input != null) {
+            if (new Set(input).size != input.length)
+                throw new Error('Duplicate port');
+            for (let port of input) {
+                let protocol = 'tcp';
+                if (port.indexOf(':') != -1) {
+                    port = port.split(':');
+                    if (port[1].indexOf('/') != -1) {
+                        port[1] = port[1].split('/');
+                        if (port[1][1] == 'udp' || port[1][1] == 'tcp') {
+                            protocol = port[1][1];
+                            port[1] = port[1][0];
+                        } else
+                            throw new Error('Invalid protocol');
+                    }
+                    if (checkPort(port[0]) && checkPort(port[1]))
+                        ports["published"][(port[0] + '/' + protocol)] = [{"HostPort": port[1]}];
+                    else
+                        throw new Error('Invalid port');
+                } else {
+                    if (port.indexOf('/') != -1) {
+                        port = port.split('/');
+                        if (port[1] == 'udp' || port[1] == 'tcp') {
+                            protocol = port[1];
+                            port = port[0];
+                        } else
+                            throw new Error('Invalid protocol');
+                    }
+                    if (checkPort(port))
+                        ports["exposed"][(port + '/' + protocol)] = {};
+                    else
+                        throw new Error('Invalid port');
+                        
+                }
+            }
+        } else 
+            throw new Error('Invalid syntax');
+    }
+    return ports;
+}
+
+const getVolumes = () => {
+    var input = $('#volumi').val();
+    var volumes = {volumes: {}, binds: []};
+    if (input != "") {
+        input = input.split(', ');
+        if (input != undefined && input != null) {
+            if (new Set(input).size != input.length)
+                throw new Error('Duplicate volume');
+            for (let volume of input) {
+                if (volume.indexOf(':') != -1)
+                    volumes.binds.push(volume);
+                else
+                    volumes.volumes[volume] = {};
+            }
+        } else
+            throw new Error('Invalid syntax');
+    }
+    return volumes;
 }
 
 const containerFullfill = (data) => {
@@ -148,7 +217,7 @@ const containerButtonsActions = () => {
             url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/' + id + '/' + $(this).val(),
             type: 'POST',
             success: () => {
-                getContainers((data) => {
+                getContainersFromHost((data) => {
                     $('#table').empty();
                     $('#volume-table').empty();
                     (() => {
@@ -159,7 +228,7 @@ const containerButtonsActions = () => {
                         })
                     })().then(() => {
                         containerButtonsActions();
-                        getVolumes(volBindFullfill)
+                        getVolumesFromHost(volBindFullfill)
                     }).then(() => {
                         volumeButtonsActions();
                     })
@@ -217,12 +286,12 @@ const volumeButtonsActions = () => {
 }
 
 $('#container-refresh').click(() => {
-    getContainers((data) => {
+    getContainersFromHost((data) => {
         $('#table').empty();
         containerFullfill(data);
     }).then(() => {
         containerButtonsActions();
-        getVolumes(volBindFullfill)
+        getVolumesFromHost(volBindFullfill)
         .then(() => {
             volumeButtonsActions();
         })
@@ -246,17 +315,61 @@ $('#container-create').click(() => {
         $('#autoremove').toggleClass('btn-danger');
         $('#autoremove').val($('#autoremove').val() == 'true' ? 'false' : 'true');
     })
+    $('#networking').click(() => {
+        $('#networking').toggleClass('btn-success');
+        $('#networking').toggleClass('btn-danger');
+        $('#networking').val($('#netiworking').val() == 'true' ? 'false' : 'true');
+    })
     $('#confirm-button-container-create-modal').click(() => {
-        
+        const ports = getPorts();
+        const volumes = getVolumes();
+        const data = {
+            Image: $('#immagine').val(),
+            ExposedPorts: ports.exposed,
+            Cmd: $('#comandi').val() ? $('#comandi').val().split('; ') : [],
+            Volumes: volumes.volumes,
+            HostConfig: {
+                Binds: volumes.binds,
+                PortBindings: ports.published,
+                RestartPolicy: {
+                    Name: $('#restart').val()
+                }
+            }
+        }
+        if ($('#avanzate').val() == 'true') {
+            data.HostConfig.RestartPolicy = {
+                Name: $('#restart').val()
+            }
+            try {
+                data.HostConfig.CpusetCpus = "0" + (Number($('#cpu').val()) - 1 != '0' ? ('-' + (Math.abs(Number($('#cpu').val()) - 1))) : "");
+            } catch (e) {
+                data.HostConfig.CpusetCpus = "0";
+            }
+            data.HostConfig.Memory = Number($('#ram').val() * 1024 * 1024);
+            data.HostConfig.AutoRemove = $('#autoremove').val() == 'true';
+            data.HostConfig.NetworkDisabled = $('#networking').val() == 'true';
+        }
+        $.ajax({
+            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/create',
+            type: 'POST',
+            data: data,
+            success: () => {
+                console.log(data);
+                //location.reload();
+            },
+            error: (e) => {
+                console.log(data);
+            }
+        })
     })
 })
 
 $('#volume-refresh').click(() => {
-    getContainers((data) => {
+    getContainersFromHost((data) => {
         $('#volume-table').empty();
         volBindFullfill(data, true);
     }).then(() => {
-        getVolumes(volBindFullfill)
+        getVolumesFromHost(volBindFullfill)
         .then(() => {
             volumeButtonsActions();
         })
@@ -287,7 +400,7 @@ $('#volume-refresh').click(() => {
         })
     })
 })().then(() => {
-    getContainers((data) => {
+    getContainersFromHost((data) => {
         $('#table').empty();
         containerFullfill(data);
         volBindFullfill(data, true);
@@ -323,7 +436,7 @@ $('#volume-refresh').click(() => {
                 }
             })
         })
-        getVolumes(volBindFullfill)
+        getVolumesFromHost(volBindFullfill)
         .then(() => {
             volumeButtonsActions();
         }).catch((err) => {
