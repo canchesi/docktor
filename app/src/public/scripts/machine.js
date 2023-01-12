@@ -352,7 +352,7 @@ $('#container-create').click(() => {
             }
             data.HostConfig.Memory = Number($('#ram').val() * 1024 * 1024);
             data.HostConfig.AutoRemove = $('#autoremove').val() == 'true';
-            data.NetworkDisabled = $('#networking').val() == 'true';
+            data.NetworkDisabled = $('#networking').val() == 'false';
         }
         $.ajax({
             url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/create?name=' + $('#nome').val(),
