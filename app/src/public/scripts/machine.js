@@ -27,6 +27,7 @@ const buttons = {
     'running': '<button class="btn btn-secondary btn-container mr-1" value="pause"><i class="fa-solid fa-pause"></i></button><button class="btn bg-gray-dark btn-container" value="stop"><i class="fa-solid fa-stop"></i></button>',
     'exited': '<button class="btn bg-olive btn-container mr-1" value="start"><i class="fa-solid fa-play"></i></button><button class="btn bg-danger btn-delete container-delete"><i class="fa-solid fa-trash"></i></button>',
     'paused': '<button class="btn bg-olive btn-container mr-1" value="unpause"><i class="fa-solid fa-play"></i></button><button class="btn bg-gray-dark btn-container" value="stop"><i class="fa-solid fa-stop"></i></button>',
+    'created': '<button class="btn bg-olive btn-container mr-1" value="start"><i class="fa-solid fa-play"></i></button><button class="btn bg-danger btn-delete container-delete"><i class="fa-solid fa-trash"></i></button>'
 }
 
 const volumeButton = '<button class="btn bg-danger btn-delete volume-delete"><i class="fa-solid fa-trash"></i></button>'
@@ -100,9 +101,10 @@ const getPorts = () => {
                         } else
                             throw new Error('Invalid protocol');
                     }
-                    if (checkPort(port[0]) && checkPort(port[1]))
-                        ports["published"][(port[0] + '/' + protocol)] = [{"HostPort": port[1]}];
-                    else
+                    if (checkPort(port[0]) && checkPort(port[1])) {
+                        ports["exposed"][(port[1] + '/' + protocol)] = {};
+                        ports["published"][(port[1] + '/' + protocol)] = [{"HostPort": port[0]}];
+                    } else
                         throw new Error('Invalid port');
                 } else {
                     if (port.indexOf('/') != -1) {
@@ -229,8 +231,9 @@ const containerButtonsActions = () => {
                     })().then(() => {
                         containerButtonsActions();
                         getVolumesFromHost(volBindFullfill)
-                    }).then(() => {
-                        volumeButtonsActions();
+                        .then(() => {
+                            volumeButtonsActions();
+                        })
                     })
                 });
             }
@@ -288,7 +291,9 @@ const volumeButtonsActions = () => {
 $('#container-refresh').click(() => {
     getContainersFromHost((data) => {
         $('#table').empty();
+        $('#volume-table').empty();
         containerFullfill(data);
+        volBindFullfill(data, true)
     }).then(() => {
         containerButtonsActions();
         getVolumesFromHost(volBindFullfill)
@@ -347,12 +352,15 @@ $('#container-create').click(() => {
             }
             data.HostConfig.Memory = Number($('#ram').val() * 1024 * 1024);
             data.HostConfig.AutoRemove = $('#autoremove').val() == 'true';
-            data.HostConfig.NetworkDisabled = $('#networking').val() == 'true';
+            data.NetworkDisabled = $('#networking').val() == 'true';
         }
         $.ajax({
-            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/create',
+            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/create?name=' + $('#nome').val(),
             type: 'POST',
-            data: data,
+            data: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            },
             success: () => {
                 console.log(data);
                 //location.reload();
@@ -418,6 +426,10 @@ $('#volume-refresh').click(() => {
             $(this).attr('hidden', 'true')
             $(this).parent().attr('contenteditable', 'true');
             $(this).parent().focus();
+            $(this).parent().focusout(() => {
+                $(this).parent().removeAttr('contenteditable');
+                $(this).parent().children(".edit").removeAttr('hidden');
+            })
 
             $(this).parent().keypress(function (e) {
                 if (e.which == 13) {
