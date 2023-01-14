@@ -104,6 +104,10 @@ textarea {
     filter: brightness(80%);
 }
 
+.fa-exclamation-triangle {
+    margin-left: 3px;
+}
+
 /* IDs */
 
 #login-button {

@@ -123,7 +123,7 @@ const getPorts = () => {
                 }
             }
         } else 
-            throw new Error('Invalid syntax');
+            throw new Error('Port invalid syntax');
     }
     return ports;
 }
@@ -137,13 +137,17 @@ const getVolumes = () => {
             if (new Set(input).size != input.length)
                 throw new Error('Duplicate volume');
             for (let volume of input) {
-                if (volume.indexOf(':') != -1)
-                    volumes.binds.push(volume);
-                else
+                if (volume.indexOf(':') != -1) {
+                    if(volume.split(':')[1] == '/')
+                        throw new Error('Invalid volume');
+                    else
+                        volumes.binds.push(volume);
+                } else
                     volumes.volumes[volume] = {};
             }
+
         } else
-            throw new Error('Invalid syntax');
+            throw new Error('Volume invalid syntax');
     }
     return volumes;
 }
@@ -319,6 +323,7 @@ $('#container-create').click(() => {
         $('#autoremove').toggleClass('btn-success');
         $('#autoremove').toggleClass('btn-danger');
         $('#autoremove').val($('#autoremove').val() == 'true' ? 'false' : 'true');
+        $('#autoremove').val() == 'true' ? $('#restart').attr('disabled', 'disabled') : $('#restart').removeAttr('disabled');
     })
     $('#networking').click(() => {
         $('#networking').toggleClass('btn-success');
@@ -326,49 +331,104 @@ $('#container-create').click(() => {
         $('#networking').val($('#netiworking').val() == 'true' ? 'false' : 'true');
     })
     $('#confirm-button-container-create-modal').click(() => {
-        const ports = getPorts();
-        const volumes = getVolumes();
-        const data = {
-            Image: $('#immagine').val(),
-            ExposedPorts: ports.exposed,
-            Cmd: $('#comandi').val() ? $('#comandi').val().split('; ') : [],
-            Volumes: volumes.volumes,
-            HostConfig: {
-                Binds: volumes.binds,
-                PortBindings: ports.published,
-                RestartPolicy: {
-                    Name: $('#restart').val()
+        $('.is-invalid').removeClass('is-invalid');
+        $('.fa-exclamation-triangle').remove();
+        try {
+            const ports = getPorts();
+            const volumes = getVolumes();
+            if ($('#immagine').val() == '')
+                throw new Error('Inserire immagine');
+            if ($('#nome').val() == '')
+                throw new Error('Inserire nome');
+            const data = {
+                Image: $('#immagine').val(),
+                ExposedPorts: ports.exposed,
+                Cmd: $('#comandi').val() ? $('#comandi').val().split('; ') : [],
+                Volumes: volumes.volumes,
+                HostConfig: {
+                    Binds: volumes.binds,
+                    PortBindings: ports.published,
                 }
             }
+            if ($('#avanzate').val() == 'true') {
+                if($('autoremove').val() == 'false')
+                    data.HostConfig.RestartPolicy = {
+                        Name: $('#restart').val()
+                    }
+                try {
+                    data.HostConfig.CpusetCpus = "0" + (Number($('#cpu').val()) - 1 != '0' ? ('-' + (Math.abs(Number($('#cpu').val()) - 1))) : "");
+                } catch (e) {
+                    data.HostConfig.CpusetCpus = "0";
+                }
+                
+                if(Number($('#ram').val()) > 6)
+                    data.HostConfig.Memory = Number($('#ram').val()) * 1024 * 1024;
+                else
+                    throw new Error('RAM minima 6MB');
+                data.HostConfig.AutoRemove = $('#autoremove').val() == 'true';
+                data.NetworkDisabled = $('#networking').val() == 'false';
+            }
+            $.ajax({
+                url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/create?name=' + $('#nome').val(),
+                type: 'POST',
+                data: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                success: () => {
+                    console.log(data);
+                    location.reload();
+                },
+                error: (e) => {
+                    console.log(data);
+                }
+            })
+        } catch (e) {
+            switch (e.message) {
+                case 'Duplicate volume':
+                    $('#volumi').addClass('is-invalid');
+                    $('label[for="volumi"]').html($('label[for="volumi"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserito volume pi\ù volte"></i>');
+                    break;
+                case 'Invalid volume':
+                    $('#volumi').addClass('is-invalid');
+                    $('label[for="volumi"]').html($('label[for="volumi"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Volume / non valido"></i>');
+                    break;
+                case 'Volume invalid syntax':
+                    $('#volumi').addClass('is-invalid');
+                    $('label[for="volumi"]').html($('label[for="volumi"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
+                    break;
+                case 'Invalid port':
+                    $('#porte').addClass('is-invalid');
+                    $('label[for="porte"]').html($('label[for="porte"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Porta non valida"></i>');
+                    break;
+                case 'Duplicate port':
+                    $('#porte').addClass('is-invalid');
+                    $('label[for="porte"]').html($('label[for="porte"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserita porta pi\ù volte"></i>');
+                    break;
+                case 'Port invalid syntax':
+                    $('#porte').addClass('is-invalid');
+                    $('label[for="porte"]').html($('label[for="porte"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
+                    break;
+                case 'Invalid protocol':
+                    $('#porte').addClass('is-invalid');
+                    $('label[for="porte"]').html($('label[for="porte"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Protocollo non valido"></i>');
+                    break;
+                case 'Inserire immagine':
+                    $('#immagine').addClass('is-invalid');
+                    $('label[for="immagine"]').html($('label[for="immagine"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserire immagine"></i>');
+                    break;
+                case 'Inserire nome':
+                    $('#nome').addClass('is-invalid');
+                    $('label[for="nome"]').html($('label[for="nome"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserire nome"></i>');
+                    break;
+                case 'RAM minima 6MB':
+                    $('#ram').addClass('is-invalid');
+                    $('label[for="ram"]').html($('label[for="ram"]').html() + '<i class="fas fa-exclamation-triangle" title="RAM minima 6MB"></i>');
+                    break;
+                default:
+                    $('#container-create-title').html($('#container-create-title').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="' + e.message + '"></i>');
+            }
         }
-        if ($('#avanzate').val() == 'true') {
-            data.HostConfig.RestartPolicy = {
-                Name: $('#restart').val()
-            }
-            try {
-                data.HostConfig.CpusetCpus = "0" + (Number($('#cpu').val()) - 1 != '0' ? ('-' + (Math.abs(Number($('#cpu').val()) - 1))) : "");
-            } catch (e) {
-                data.HostConfig.CpusetCpus = "0";
-            }
-            data.HostConfig.Memory = Number($('#ram').val() * 1024 * 1024);
-            data.HostConfig.AutoRemove = $('#autoremove').val() == 'true';
-            data.NetworkDisabled = $('#networking').val() == 'false';
-        }
-        $.ajax({
-            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/create?name=' + $('#nome').val(),
-            type: 'POST',
-            data: JSON.stringify(data),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            success: () => {
-                console.log(data);
-                //location.reload();
-            },
-            error: (e) => {
-                console.log(data);
-            }
-        })
     })
 })
 
