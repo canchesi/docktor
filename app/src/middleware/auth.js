@@ -7,18 +7,6 @@ const verifyToken = async (req, res, next) => {
   	try{
 		if (await User.findOne({where: {token: token}})) {
 			req.user = jwt.verify(token, config.token);
-			const user = await User.findOne({where: {id: req.user.id}});
-			const newToken = jwt.sign({
-				id: user.id,
-				email: user.email
-			},
-			config.token,
-			{
-				expiresIn: '1h'
-			});
-			user.token = newToken;
-			await user.save();
-			res.cookie('token', newToken, { maxAge: 3600000, secure: true, sameSite: 'None' });
 			if (req.user)
 				next();
 			else
