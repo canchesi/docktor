@@ -152,6 +152,21 @@ const getVolumes = () => {
     return volumes;
 }
 
+const getImage = () => {
+    var image = $('#immagine').val();
+    if (image != "")
+        if(image.indexOf(':') != -1) {
+            image = image.split(':');
+            if (image[1] == '')
+                throw new Error('Invalid image');
+            else
+                return image;
+        } else
+            return [image, 'latest'];
+    else
+        throw new Error('Image invalid syntax');
+}
+
 const containerFullfill = (data) => {
     for (let container of JSON.parse(data).sort((a, b) => {
         if (statuses[a.State] > statuses[b.State])
@@ -264,15 +279,18 @@ const containerButtonsActions = () => {
                     url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/' + id,
                     type: 'DELETE'
                 }).then(() => {
-                for (volume of volumes)
-                    $.ajax({
-                        url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/' + volume.Name + '?force=1',
-                        type: 'DELETE',
-                        success:() => {
-                            if(!--deleted)
-                                location.reload()
-                        }
-                    })
+                    if(deleted > 0)
+                        for (volume of volumes)
+                            $.ajax({
+                                url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/' + volume.Name + '?force=1',
+                                type: 'DELETE',
+                                success:() => {
+                                    if(!--deleted)
+                                        location.reload()
+                                }
+                            })
+                    else
+                        location.reload()
                 })
             })
         })
@@ -336,12 +354,13 @@ $('#container-create').click(() => {
         try {
             const ports = getPorts();
             const volumes = getVolumes();
+            const image = getImage();
             if ($('#immagine').val() == '')
                 throw new Error('Inserire immagine');
             if ($('#nome').val() == '')
                 throw new Error('Inserire nome');
             const data = {
-                Image: $('#immagine').val(),
+                Image: image[0] + ':' + image[1],
                 ExposedPorts: ports.exposed,
                 Cmd: $('#comandi').val() ? $('#comandi').val().split('; ') : [],
                 Volumes: volumes.volumes,
@@ -376,57 +395,103 @@ $('#container-create').click(() => {
                     'Content-Type': 'application/json'
                 },
                 success: () => {
-                    console.log(data);
                     location.reload();
                 },
                 error: (e) => {
-                    console.log(data);
+                    $('#container-create-error').empty();
+                    switch (e.status) {
+                        case 400:
+                            $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Errore di sintassi"></i>');
+                            break;
+                        case 404:
+                            $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Immagine non trovata"></i><button id="pull-image" class="btn btn-warning ml-2"><i class="fas fa-download"></i> Scarica immagine</button>');
+                            $('#pull-image').click(() => {
+                                $('#pull-image').html('<i class="fas fa-spinner fa-spin"></i> Scaricamento in corso...');
+                                $.ajax({
+                                    url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/images/create?fromImage=' + image[0] + '&tag=' + image[1],
+                                    type: 'POST',
+                                    success: () => {
+                                        $('#pull-image').html('<i class="fas fa-check"></i> Immagine scaricata');
+                                        $('#pull-image').attr('disabled', 'disabled');
+                                    },
+                                    error: (e) => {
+                                        switch (e.status) {
+                                            case 400:
+                                                $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Errore di sintassi"></i>');
+                                                break;
+                                            case 404:
+                                                $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Immagine inesistente"></i>');
+                                                break;
+                                            case 409:
+                                                $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Conflitto durante la creazione"></i>');
+                                                break;
+                                            case 500:
+                                                $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Errore interno"></i>');
+                                                break;
+                                            default:
+                                                $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Errore sconosciuto"></i>');
+                                        }
+                                    }
+                                })
+                            })
+                            break;
+                        case 409:
+                            $('#container-create-title').html($('#container-create-title').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Conflitto durante la creazione"></i>');
+                            break;
+                        case 500:
+                            $('#container-create-title').html($('#container-create-title').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Errore interno"></i>');
+                            break;
+                        default:
+                            $('#container-create-title').html($('#container-create-title').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Errore sconosciuto"></i>');
+                    }
+
                 }
             })
         } catch (e) {
+            $('#container-create-error').empty();
             switch (e.message) {
                 case 'Duplicate volume':
                     $('#volumi').addClass('is-invalid');
-                    $('label[for="volumi"]').html($('label[for="volumi"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserito volume pi\ù volte"></i>');
+                    $('label[for="volumi"]').html($('label[for="volumi"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserito volume pi\ù volte"></i>');
                     break;
                 case 'Invalid volume':
                     $('#volumi').addClass('is-invalid');
-                    $('label[for="volumi"]').html($('label[for="volumi"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Volume / non valido"></i>');
+                    $('label[for="volumi"]').html($('label[for="volumi"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Volume / non valido"></i>');
                     break;
                 case 'Volume invalid syntax':
                     $('#volumi').addClass('is-invalid');
-                    $('label[for="volumi"]').html($('label[for="volumi"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
+                    $('label[for="volumi"]').html($('label[for="volumi"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
                     break;
                 case 'Invalid port':
                     $('#porte').addClass('is-invalid');
-                    $('label[for="porte"]').html($('label[for="porte"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Porta non valida"></i>');
+                    $('label[for="porte"]').html($('label[for="porte"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Porta non valida"></i>');
                     break;
                 case 'Duplicate port':
                     $('#porte').addClass('is-invalid');
-                    $('label[for="porte"]').html($('label[for="porte"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserita porta pi\ù volte"></i>');
+                    $('label[for="porte"]').html($('label[for="porte"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserita porta pi\ù volte"></i>');
                     break;
                 case 'Port invalid syntax':
                     $('#porte').addClass('is-invalid');
-                    $('label[for="porte"]').html($('label[for="porte"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
+                    $('label[for="porte"]').html($('label[for="porte"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
                     break;
                 case 'Invalid protocol':
                     $('#porte').addClass('is-invalid');
-                    $('label[for="porte"]').html($('label[for="porte"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Protocollo non valido"></i>');
+                    $('label[for="porte"]').html($('label[for="porte"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Protocollo non valido"></i>');
                     break;
                 case 'Inserire immagine':
                     $('#immagine').addClass('is-invalid');
-                    $('label[for="immagine"]').html($('label[for="immagine"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserire immagine"></i>');
+                    $('label[for="immagine"]').html($('label[for="immagine"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserire immagine"></i>');
                     break;
                 case 'Inserire nome':
                     $('#nome').addClass('is-invalid');
-                    $('label[for="nome"]').html($('label[for="nome"]').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserire nome"></i>');
+                    $('label[for="nome"]').html($('label[for="nome"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserire nome"></i>');
                     break;
                 case 'RAM minima 6MB':
                     $('#ram').addClass('is-invalid');
                     $('label[for="ram"]').html($('label[for="ram"]').html() + '<i class="fas fa-exclamation-triangle" title="RAM minima 6MB"></i>');
                     break;
                 default:
-                    $('#container-create-title').html($('#container-create-title').text() + '&nbsp;<i class="fas fa-exclamation-triangle" title="' + e.message + '"></i>');
+                    $('#container-create-title').html($('#container-create-title').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="' + e.message + '"></i>');
             }
         }
     })
