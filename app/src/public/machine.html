@@ -50,10 +50,10 @@
         <div class="dashboard-row card card-info col-5" id="card-containers" style="padding: 0;">
             <div class="card-header">
                 <h3 class="card-title" style="padding-top: 0.5rem;">Containers</h3>
-                <button class="btn bg-info float-right" id="container-create"><i class="fa-solid fa-plus"></i></button>
-                <button class="btn bg-info float-right" id="container-refresh"><i class="fa-solid fa-refresh"></i></button>
+                <button class="btn bg-info float-right" id="container-create" title="Crea nuovo container"><i class="fa-solid fa-plus"></i></button>
+                <button class="btn bg-info float-right" id="container-refresh" title="Aggiorna"><i class="fa-solid fa-refresh"></i></button>
             </div>
-            <div class="card-body" id="div-table" style="padding: 0">
+            <div class="card-body" id="div-table" style="padding:0; overflow-y: auto; display: block;">
                 <table class="table table-bordered table-hover" id="table-containers" style="text-align: center;">
                     <thead>
                         <tr>
@@ -71,8 +71,9 @@
         <div class="card card-info col-5 ml-auto" id="card-volume" style="padding: 0;">
             <div class="card-header">
                 <h3 class="card-title" style="padding-top: 0.5rem;">Volumi</h3>
-                <button class="btn bg-info btn-create float-right" id="volume-create"><i class="fa-solid fa-plus"></i></button>
-                <button class="btn bg-info btn-refresh float-right" id="volume-refresh"><i class="fa-solid fa-refresh"></i></button>
+                <button class="btn bg-info btn-create float-right" id="volume-create" title="Crea nuovo container"><i class="fa-solid fa-plus"></i></button>
+                <button class="btn bg-info btn-refresh float-right" id="volume-refresh"><i class="fa-solid fa-refresh" title="Aggiorna"></i></button>
+                <button class="btn bg-info btn-prune float-right" id="volume-prune"><i class="fa-solid fa-trash" title="Elimina volumi inutilizzati"></i></button>
             </div>
             <div class="card-body" id="div-table-volumes" style="padding: 0">
                 <table class="table table-bordered table-hover" id="table-volumes" style="text-align: center; table-layout: fixed;">
@@ -105,6 +106,23 @@
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" id="cancel-button-container-modal">Annulla</button>
                     <button type="button" class="btn btn-danger" id="confirm-button-container-modal">Elimina</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="volume-prune-modal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Sicuro di voler eliminare tutti i volumi inutilizzati?</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Così facendo tutti i volumi non connessi ad alcun container verranno eliminati.</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" id="cancel-button-volume-prune-modal">Annulla</button>
+                    <button type="button" class="btn btn-danger" id="confirm-button-volume-prune-modal">Elimina</button>
                 </div>
             </div>
         </div>
@@ -174,6 +192,31 @@
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" id="cancel-button-container-create-modal">Annulla</button>
                     <button type="button" class="btn bg-olive" id="confirm-button-container-create-modal">Crea</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="volume-create-modal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header row" style="justify-content: left;">
+                    <h4 class="modal-title" id="volume-create-title">
+                        Crea un nuovo volume
+                    </h4>
+                    <h4 id="volume-create-error" class="ml-1"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-12">
+                            <label for="nome-volume">Nome volume</label>
+                            <input type="text" class="form-control" id="nome-volume" placeholder="Nome">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" id="cancel-button-volume-create-modal">Annulla</button>
+                    <button type="button" class="btn bg-olive" id="confirm-button-volume-create-modal">Crea</button>
                 </div>
             </div>
         </div>

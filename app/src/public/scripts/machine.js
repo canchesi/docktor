@@ -164,7 +164,7 @@ const getImage = () => {
         } else
             return [image, 'latest'];
     else
-        throw new Error('Image invalid syntax');
+        throw new Error('Inserire immagine');
 }
 
 const containerFullfill = (data) => {
@@ -182,11 +182,11 @@ const containerFullfill = (data) => {
             <td>' + buttons[container.State] + '</td></tr>')
 
     $('#check').remove();
-    if ($('#table-containers').height() > $('#div-table').height())
+    //if ($('#table-containers').height() > $('#div-table').height())
         $('#div-table').attr('style', 'padding:0; overflow-y: auto; display: block;')
-    else if (!$('#table').children().length){
-        $('#table-containers').parent().attr('style', 'padding: 0;position: relative').append('<i class="fa-solid fa-check" id="check" title="Non ci sono containers"></i>')
-    }
+    //else if (!$('#table').children().length){
+    //    $('#table-containers').parent().attr('style', 'padding: 0;position: relative').append('<i class="fa-solid fa-check" id="check" title="Non ci sono containers"></i>')
+    //}
 }
 
 const volBindFullfill = (data, connected) => {
@@ -203,7 +203,12 @@ const volBindFullfill = (data, connected) => {
                 return 1;
             else if (types[(a.Type)] < types[(b.Type)])
                 return -1;
-            return a.container.localeCompare(b.container) ? a.container.localeCompare(b.container) : a.Name.localeCompare(b.Name)}))
+            else if (a.container.localeCompare(b.container))
+                return a.container.localeCompare(b.container)
+            else if (a.Name != undefined && b.Name != undefined)
+                return a.Name.localeCompare(b.Name)
+            else 
+                return a.Source.localeCompare(b.Source)}))
                 $('#volume-table').append('<tr> \
                     <td>' + bind.Type.charAt(0).toUpperCase() + bind.Type.slice(1) + '</td> \
                     <td>' + (bind.Type == 'volume' ? bind.Name : bind.Source) + '</td> \
@@ -327,6 +332,7 @@ $('#container-refresh').click(() => {
 
 $('#container-create').click(() => {
     $('#container-create-modal').modal('show');
+    $('#container-create-error').empty();
     $('#cancel-button-container-create-modal').click(() => {
         $('#container-create-modal').modal('hide');
     })
@@ -426,7 +432,7 @@ $('#container-create').click(() => {
                                                 $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Conflitto durante la creazione"></i>');
                                                 break;
                                             case 500:
-                                                $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Errore interno"></i>');
+                                                $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Errore interno. Controllare parametri."></i>');
                                                 break;
                                             default:
                                                 $('#container-create-error').html('<i class="fas fa-exclamation-triangle" title="Errore sconosciuto"></i>');
@@ -436,13 +442,13 @@ $('#container-create').click(() => {
                             })
                             break;
                         case 409:
-                            $('#container-create-title').html($('#container-create-title').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Conflitto durante la creazione"></i>');
+                            $('#container-create-title').html($('#container-create-title').html() + '<i class="fas fa-exclamation-triangle" title="Conflitto durante la creazione"></i>');
                             break;
                         case 500:
-                            $('#container-create-title').html($('#container-create-title').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Errore interno"></i>');
+                            $('#container-create-title').html($('#container-create-title').html() + '<i class="fas fa-exclamation-triangle" title="Errore interno"></i>');
                             break;
                         default:
-                            $('#container-create-title').html($('#container-create-title').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Errore sconosciuto"></i>');
+                            $('#container-create-title').html($('#container-create-title').html() + '<i class="fas fa-exclamation-triangle" title="Errore sconosciuto"></i>');
                     }
 
                 }
@@ -452,50 +458,72 @@ $('#container-create').click(() => {
             switch (e.message) {
                 case 'Duplicate volume':
                     $('#volumi').addClass('is-invalid');
-                    $('label[for="volumi"]').html($('label[for="volumi"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserito volume pi\ù volte"></i>');
+                    $('label[for="volumi"]').html($('label[for="volumi"]').html() + '<i class="fas fa-exclamation-triangle" title="Inserito volume pi\ù volte"></i>');
                     break;
                 case 'Invalid volume':
                     $('#volumi').addClass('is-invalid');
-                    $('label[for="volumi"]').html($('label[for="volumi"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Volume / non valido"></i>');
+                    $('label[for="volumi"]').html($('label[for="volumi"]').html() + '<i class="fas fa-exclamation-triangle" title="Volume / non valido"></i>');
                     break;
                 case 'Volume invalid syntax':
                     $('#volumi').addClass('is-invalid');
-                    $('label[for="volumi"]').html($('label[for="volumi"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
+                    $('label[for="volumi"]').html($('label[for="volumi"]').html() + '<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
                     break;
                 case 'Invalid port':
                     $('#porte').addClass('is-invalid');
-                    $('label[for="porte"]').html($('label[for="porte"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Porta non valida"></i>');
+                    $('label[for="porte"]').html($('label[for="porte"]').html() + '<i class="fas fa-exclamation-triangle" title="Porta non valida"></i>');
                     break;
                 case 'Duplicate port':
                     $('#porte').addClass('is-invalid');
-                    $('label[for="porte"]').html($('label[for="porte"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserita porta pi\ù volte"></i>');
+                    $('label[for="porte"]').html($('label[for="porte"]').html() + '<i class="fas fa-exclamation-triangle" title="Inserita porta pi\ù volte"></i>');
                     break;
                 case 'Port invalid syntax':
                     $('#porte').addClass('is-invalid');
-                    $('label[for="porte"]').html($('label[for="porte"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
+                    $('label[for="porte"]').html($('label[for="porte"]').html() + '<i class="fas fa-exclamation-triangle" title="Sintassi non valida, rispettare l\'esempio"></i>');
                     break;
                 case 'Invalid protocol':
                     $('#porte').addClass('is-invalid');
-                    $('label[for="porte"]').html($('label[for="porte"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Protocollo non valido"></i>');
+                    $('label[for="porte"]').html($('label[for="porte"]').html() + '<i class="fas fa-exclamation-triangle" title="Protocollo non valido"></i>');
                     break;
                 case 'Inserire immagine':
                     $('#immagine').addClass('is-invalid');
-                    $('label[for="immagine"]').html($('label[for="immagine"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserire immagine"></i>');
+                    $('label[for="immagine"]').html($('label[for="immagine"]').html() + '<i class="fas fa-exclamation-triangle" title="Inserire immagine"></i>');
                     break;
                 case 'Inserire nome':
                     $('#nome').addClass('is-invalid');
-                    $('label[for="nome"]').html($('label[for="nome"]').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="Inserire nome"></i>');
+                    $('label[for="nome"]').html($('label[for="nome"]').html() + '<i class="fas fa-exclamation-triangle" title="Inserire nome"></i>');
                     break;
                 case 'RAM minima 6MB':
                     $('#ram').addClass('is-invalid');
                     $('label[for="ram"]').html($('label[for="ram"]').html() + '<i class="fas fa-exclamation-triangle" title="RAM minima 6MB"></i>');
                     break;
                 default:
-                    $('#container-create-title').html($('#container-create-title').html() + '&nbsp;<i class="fas fa-exclamation-triangle" title="' + e.message + '"></i>');
+                    $('#container-create-title').html($('#container-create-title').html() + '<i class="fas fa-exclamation-triangle" title="' + e.message + '"></i>');
             }
         }
     })
 })
+
+$('#volume-create').click(() => {
+    $('#volume-create-modal').modal('show');
+    $('#volume-create-error').empty();
+    $('#cancel-button-volume-create-modal').click(() => {
+        $('#volume-create-modal').modal('hide');
+    })
+
+    $('#confirm-button-volume-create-modal').click(() => {
+        $.ajax({
+            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/create',
+            type: 'POST',
+            data: {
+                name: $('#nome-volume').val() || null,
+            },
+            success: (data) => {
+                location.reload();
+            }
+        })
+    })
+})
+
 
 $('#volume-refresh').click(() => {
     getContainersFromHost((data) => {
@@ -509,6 +537,22 @@ $('#volume-refresh').click(() => {
     })
 });
 
+$('#volume-prune').click(() => {
+    $('#volume-prune-modal').modal('show');
+    $('#cancel-button-volume-prune-modal').click(() => {
+        $('#volume-prune-modal').modal('hide');
+    })
+    $('#confirm-button-volume-prune-modal').click(() => {
+        $('#volume-prune-modal').modal('hide');
+        $.ajax({
+            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/prune',
+            type: 'POST',
+            success: function (data) {
+                location.reload();
+            }
+        })
+    })
+});
 
 (() => {
 
