@@ -1,9 +1,13 @@
-const getContainers = ({ address, port, id }) => {
+const getContainers = ({ address, port, id, machine }) => {
     return new Promise((resolve, reject) => {
         $.ajax({
             url: 'http://' + address + ':' + port + '/api/containers/json?all=1',
             type: 'GET',
             success: (data) => {
+                data = JSON.parse(data);
+                data.forEach((elem) => {
+                    elem.machine = machine;
+                });
                 resolve(data);
             },
             error: (err) => {
@@ -12,6 +16,26 @@ const getContainers = ({ address, port, id }) => {
         });
     });
 }
+
+const getVolumes = ({ address, port, id, machine }) => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: 'http://' + address + ':' + port + '/api/volumes',
+            type: 'GET',
+            success: (data) => {
+                data = JSON.parse(data);
+                data.Volumes.forEach((elem) => {
+                    elem.machine = machine;
+                });
+                resolve(data.Volumes);
+            },
+            error: (err) => {
+                reject(id);
+            }
+        });
+    });
+}
+
 (() => {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -24,20 +48,38 @@ const getContainers = ({ address, port, id }) => {
                 for (elem of data)
                     if (elem.is_active)
                         knownActiveMachines++;
-                for (elem of data) {
+                for (elem of data.sort((a, b) => {a.custom_name.localeCompare(b.custom_name)})) {
+                    $('#machine-table').append(`
+                        <tr>
+                            <td>${elem.custom_name}</td>
+                            <td>${elem.address}:${elem.port}</td>
+                        </tr>
+                    `)
                     if (elem.is_active) {
                         getContainers({
                             address: elem.address,
                             port: elem.port,
-                            id: elem.id
+                            id: elem.id,
+                            machine: elem.custom_name
                         }).then((data) => {
+                            data.sort((a, b) => {
+                                return -(a.Status.localeCompare(b.Status));
+                            })
                             ++activeMachines
                             let actualContainers = parseInt($('#total-containers').html())
-                            for (elem of JSON.parse(data))
-                                if(elem.State == 'running')
+                            for (cont of data) {
+                                if(cont.State == 'running')
                                     ++activeContainers;
+                                $('#container-table').append(`
+                                    <tr>
+                                        <td>${cont.Names[0].substring(1)}</td>
+                                        <td>${cont.machine}</td>
+                                        <td>${cont.State}</td>
+                                    </tr>
+                                `)
+                            }
                             $('#active-containers').html(activeContainers);
-                            $('#total-containers').html(actualContainers + JSON.parse(data).length)
+                            $('#total-containers').html(actualContainers + data.length)
                             $('#active-machines').html(activeMachines)
                             if(activeMachines == knownActiveMachines)
                                 resolve();
@@ -54,6 +96,28 @@ const getContainers = ({ address, port, id }) => {
                                 }
                             });
                             resolve();
+                        })
+                        getVolumes({
+                            address: elem.address,
+                            port: elem.port,
+                            id: elem.id,
+                            machine: elem.custom_name
+                        }).then((data) => {
+                            data.sort((a, b) => {
+                                return a.Name.localeCompare(b.Name);
+                            })
+                            let actualVolumes = parseInt($('#total-volumes').html())
+                            for (vol of data) {
+                                $('#volume-table').append(`
+                                    <tr>
+                                        <td>${vol.Name}</td>
+                                        <td>${vol.machine}</td>
+                                    </tr>
+                                `)
+                            }
+                            $('#total-volumes').html(actualVolumes + data.length)
+                            if(activeMachines == knownActiveMachines)
+                                resolve();
                         })
                     }
                 }

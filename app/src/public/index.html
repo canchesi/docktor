@@ -16,7 +16,7 @@
 <body>
     <div id="sidebar"></div>
     <div class="row dashboard-row">
-        <div class="col-md-3 col-sm-6 col-xs-12 mt-3">
+        <div class="col-md-4 col-sm-6 col-xs-12 mt-3">
             <div class="info-box" id="machines-info">
                 <span class="info-box-icon bg-olive">
                     <i class="fas fa-server"></i>
@@ -34,7 +34,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 col-xs-12 mt-3">
+        <div class="col-md-4 col-sm-6 col-xs-12 mt-3">
             <div class="info-box" id="containers-info">
                 <span class="info-box-icon bg-primary">
                     <i class="cib-docker"></i>
@@ -47,6 +47,64 @@
                     <span class="info-box-number" id="total-containers">0</span>
                     <span class="info-box-number" id="active-containers">0</span>
                 </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12 mt-3">
+            <div class="info-box" id="volume-info">
+                <span class="info-box-icon bg-secondary">
+                    <i class="fa-solid fa-database"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Volumi totali</span> 
+                    <span class="info-box-text">Volumi attivi</span>
+                </div>
+                <div class="info-box-content">
+                    <span class="info-box-number" id="total-containers">0</span>
+                    <span class="info-box-number" id="active-containers">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="info-box div-dash-table" id="machines" style="height: 80vh;">
+                <table class="table table-striped" style="height: fit-content;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Indirizzo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="machine-table">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="info-box div-dash-table" id="containers" style="height: 80vh;">
+                <table class="table table-striped" style="height: fit-content;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Macchina</th>
+                            <th scope="col">Stato</th>
+                        </tr>
+                    </thead>
+                    <tbody id="container-table">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="info-box div-dash-table" id="volumes" style="height: 80vh;">
+                <table class="table table-striped" style="height: fit-content; table-layout: fixed;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Macchina</th>
+                        </tr>
+                    </thead>
+                    <tbody id="volume-table">
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

@@ -77,6 +77,14 @@ textarea {
     display: none;
 }
 
+.open-menu-btn {
+    height: 100%;
+}
+.div-dash-table {
+    overflow: auto;
+    table-layout: fixed;
+}
+
 /* AdminLTE modificato */
 
 .login-logo {
@@ -107,6 +115,15 @@ textarea {
 .fa-exclamation-triangle {
     margin-left: 3px;
 }
+
+/*.info-box {
+    margin: 0;
+}
+
+.info-box-number, .info-box-text {
+    font-size: 1.1rem;
+    text-align: center;
+}*/
 
 /* IDs */
 
