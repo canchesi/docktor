@@ -73,6 +73,9 @@ textarea {
     background-color: lightgrey;
 }
 
+.btn-container, .btn-delete {
+    margin-right: 0.2rem;
+}
 .avanzata {
     display: none;
 }
@@ -83,6 +86,14 @@ textarea {
 .div-dash-table {
     overflow: auto;
     table-layout: fixed;
+}
+
+.machine-delete-button {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
 }
 
 /* AdminLTE modificato */

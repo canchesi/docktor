@@ -113,17 +113,18 @@ const createMachine = async (req, res) => {
             res.status(400).send("Richiesta non valida");
             return;
         }
+        console.log(is_active);
         const transaction = await sequelize.transaction();
         const machine = await Machine.create({
             custom_name: custom_name,
             address: address,
             port: port,
-            is_active: is_active || true
+            is_active: is_active || false
         }, { transaction });
         await GroupMachineRelation.create({
             mid: machine.id,
             gid: (await Group.findOne({
-                where: { name: req.headers.uid, is_private: true } 
+                where: { name: req.user.id, is_private: true } 
             }, { transaction })).id
         }, { transaction });
         await transaction.commit();

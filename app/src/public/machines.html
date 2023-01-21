@@ -2,10 +2,11 @@
 <head>
     <title>Docktor</title>
     <!-- Style and scripts -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/icons@2.1.0/css/all.css">
     <script src="https://kit.fontawesome.com/116143211a.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/icons@2.1.0/css/all.css">
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
     <!-- Personal style and scirpts -->
     <link rel="stylesheet" href="/style">
     <script src="/scripts/sidebar" defer></script>
@@ -16,4 +17,68 @@
 <body>
     <div id="sidebar"></div>
     <div class="dashboard-row" id="machines"></div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="machine-add-modal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="justify-content: left;">
+                    <h4 class="modal-title" id="machine-add-title">
+                        Aggiungi una nuova macchina
+                    </h4>
+                    <h4 id="machine-add-error" class="ml-1"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-3">
+                            <label for="machine-name" title="Max 20 caratteri; unico carattere speciale: _">Nome</label>
+                            <input type="text" class="form-control" id="machine-name" placeholder="Nome">
+                        </div>
+                        <div class="form-group col-5">
+                            <label for="machine-ip">Indirizzo</label>
+                            <input type="text" class="form-control" id="machine-address" placeholder="a.b.c.d / [a:b:c:d::e] / example.com">
+                        </div>
+                        <div class="form-group col-2">
+                            <label for="machine-port">Porta</label>
+                            <input type="text" class="form-control" id="machine-port" placeholder="3100">
+                        </div>
+                        <div class="form-group col-2">
+                            <label for="active">&nbsp;</label>
+                            <button class="btn btn-success col-12" value="true" title="Macchina rintracciabile nella rete al momento della creazione." id="active">Attiva</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" id="cancel-button-machine-add-modal">Annulla</button>
+                    <button type="button" class="btn bg-olive" id="confirm-button-machine-add-modal">Aggiungi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="machine-group-add-modal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="justify-content: left;">
+                    <h4 class="modal-title" id="machine-group-add-title">
+                        Aggiungi una macchina a questo grouppo
+                    </h4>
+                    <h4 id="machine-group-add-error" class="ml-1"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-12">
+                            <label for="machine-group-name">Macchina</label>
+                            <select class="form-control" id="machine-group-name">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" id="cancel-button-machine-group-add-modal">Annulla</button>
+                    <button type="button" class="btn bg-olive" id="confirm-button-machine-group-add-modal">Aggiungi</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>

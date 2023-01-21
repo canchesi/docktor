@@ -22,7 +22,7 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                         ]
                     }
                 })) != checkType) {
-                    res.status(409).send("Utente " + (checkType ? " non " : " già ") + "presente");
+                    res.status(409).send("Utente " + (checkType ? "non" : "già") + " presente");
                     return;
                 }
                 break;
@@ -35,7 +35,7 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                         ]
                     }
                 })) != checkType) {
-                    res.status(409).send("Gruppo" + (checkType ? " non " : " già ") + "presente");
+                    res.status(409).send("Gruppo" + (checkType ? "non" : "già") + " presente");
                     return;
                 }
                 break;
@@ -48,7 +48,7 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                         ]
                     }
                 })) != checkType) {
-                    res.status(409).send("Info " + (checkType ? " non " : " già ") + " presente");
+                    res.status(409).send("Info " + (checkType ? "non" : "già") + " presente");
                     return;
                 }
                 break;
@@ -62,7 +62,7 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                         ]
                     }
                 })) != checkType) {
-                    res.status(409).send("Relazione " + (checkType ? " non " : " già ") + " presente");
+                    res.status(409).send("Relazione " + (checkType ? "non" : "già") + " presente");
                     return;
                 }
                 break;
@@ -75,21 +75,18 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                         ]
                     }
                 })) != checkType) {
-                    res.status(409).send("Macchina " + (checkType ? " non " : " già ") + " presente");
+                    res.status(409).send("Macchina " + (checkType ? "non" : "già") + " presente");
                     return;
                 }
                 break;
             case 'groupMachine':
                 if (Boolean(await GroupMachineRelation.findOne({
                     where: {
-                        [Op.or]: [
-                            { gid: req.body.gid || Number(req.params.id) || '' ,
-                              mid: req.body.mid || '' },
-                            { id: req.body.id || '' }
-                        ]
+                        gid: req.body.gid || '' ,
+                        mid: req.params.id || ''
                     }
                 })) != checkType) {
-                    res.status(409).send("Relazione " + (checkType ? " non " : " già ") + " presente");
+                    res.status(409).send("Relazione " + (checkType ? "non" : "già") + " presente");
                     return;
                 }
                 break;

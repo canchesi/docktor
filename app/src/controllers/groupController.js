@@ -41,6 +41,7 @@ const getUserGroups = async (req, res) => {
             attributes: ['gid']
         })
 
+        console.log('asd'+groups);
         if(groups)
             var groups = await Group.findAll({
                 where: {
