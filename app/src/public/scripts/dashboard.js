@@ -135,8 +135,7 @@ const dashboardCreate = (data) => {
                     }
                     $('#total-volumes').html(actualVolumes + data.length)
                     $('#active-volumes').html(activeVolumes[0]);
-                    if (activeMachines == knownActiveMachines)
-                        $('.overlay').hide();
+                    $('.overlay').hide();
                 })
     })
 }
