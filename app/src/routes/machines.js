@@ -6,8 +6,8 @@ const {
     createMachine,
     updateMachine,
     deleteMachine,
-    addGroupToMachine,
-    removeGroupFromMachine
+    addMachineToGroup,
+    removeMachineFromGroup
 } = require('../controllers/machineController');
 const alreadyExists = require('../middleware/alreadyExists');
 
@@ -18,9 +18,9 @@ machines.post('/create', alreadyExists('machine', false), createMachine);
 machines.use('/:id', alreadyExists('machine', true)); // middleware comune
 
 machines.get('/:id', getMachine);
-machines.post('/:id/add', alreadyExists('groupMachine', false), addGroupToMachine);
+machines.post('/:id/add', alreadyExists('groupMachine', false), addMachineToGroup);
 machines.put('/:id', updateMachine);
 machines.delete('/:id', deleteMachine);
-machines.delete('/:id/remove', alreadyExists('groupMachine', true), removeGroupFromMachine);
+machines.delete('/:id/remove', alreadyExists('groupMachine', true), removeMachineFromGroup);
 
 module.exports = machines;

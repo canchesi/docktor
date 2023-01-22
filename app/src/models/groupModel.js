@@ -10,14 +10,13 @@ const group = sequelize.define('group', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
     },
-    num_members: {
+    num_machines: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
     },
-    is_private: {
+    is_default: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false

@@ -88,7 +88,7 @@ textarea {
     table-layout: fixed;
 }
 
-.machine-delete-button {
+.machine-delete-button, .machine-delete-from-group-button {
     align-items: center;
     display: flex;
     justify-content: center;

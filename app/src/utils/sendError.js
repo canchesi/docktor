@@ -14,7 +14,8 @@ const sendError = (error, res) => {
                 res.status(401).send("Non puoi cancellare l'utente di default");
                 return;
         }
-    res.status(501).send("Errore durante l'operazione");
+    res.status(501).send(error);
+    //res.status(501).send("Errore durante l'operazione");
 }
 
 module.exports = sendError;

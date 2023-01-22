@@ -111,15 +111,64 @@ $.ajax({
     url: '/api/groups/this',
     type: 'GET',
     success: (data) => {
-        const private = data.splice(data.indexOf(data.find((el) => el.is_private)), 1)[0]
-        $('#groups').append('<tr style="background: var(--color-primary);"><td>' + private.id + '</td><td>Privato</td><td>' + private.num_members + '</td></tr>')
+        const defult = data.splice(data.indexOf(data.find((el) => el.is_default)), 1)[0]
+        $('#groups').append('<tr style="background: var(--color-primary);"><td>' + defult.id + '</td><td>Defult</td><td>' + defult.num_machines + '</td><td></td></tr>')
         data.forEach((el) => {
-            $('#groups').append('<tr><td>' + el.id + '</td><td>' + el.name + '</td><td>' + el.num_members + '</td></tr>')
+            $('#groups').append('<tr><td>' + el.id + '</td><td>' + el.name + '</td><td>' + el.num_machines + '</td><td><button class="btn btn-danger btn-sm group-delete-button" id="group-delete-' + el.id + '"><i class="fa-solid fa-trash"></i></button></td></tr>')
         })
         if($('#group-table').height() > $('#group-table').parent().height())
             $('#group-table').parent().attr('style', 'overflow-y: scroll;')
         else if($('#group-table').height() < $('#group-table').parent().height() / 1.33)
             $('#group-table').parent().attr('style', 'position: relative').append('<i class="fa-solid fa-check" id="check" title="Non ci sono pi\ gruppi" style="top:' + ((1 + ($('#group-table').height() / $('#group-table').parent().height())) * 50) + '%"></i>')
     }
+
+}).then(() => {
+    $('#group-create-button').click(() => {
+        $('#group-create-modal').modal('show')
+        $('label[for="group-name"]').html('Nome');
+        $('#cancel-button-group-create-modal').click(() => {
+            $('#group-create-modal').modal('hide')
+        })
+
+        $('#confirm-button-group-create-modal').click(() => {
+            $('#group-name').removeClass('is-invalid is-valid');
+            if ($('#group-name').val() == '')
+                $('#group-name').removeClass('is-valid').addClass('is-invalid')
+            else {
+                $.ajax({
+                    url: '/api/groups/this',
+                    type: 'GET',
+                    success: (data) => {
+                        if (data.find((el) => el.name == $('#group-name').val())) {
+                            $('label[for="group-name"]').html('Nome');
+                            $('#group-name').removeClass('is-valid').addClass('is-invalid')
+                            $('label[for="group-name"]').append('<i class="fa-solid fa-exclamation-triangle" title="Esiste gi\ un gruppo con questo nome"></i>')
+                        } else
+                            $.ajax({
+                                url: '/api/groups/create',
+                                type: 'POST',
+                                data: {
+                                    name: $('#group-name').val()
+                                },
+                                success: () => {
+                                    location.reload()
+                                }
+                            })
+                    }
+                })
+            }
+        })
+    })
+
+    $('.group-delete-button').click((e) => {
+        console.log(e.target.id.split('-')[2]);
+        $.ajax({
+            url: '/api/groups/' + e.delegateTarget.id.split('-')[2],
+            type: 'DELETE',
+            success: () => {
+                location.reload()
+            }
+        })
+    })
 
 })

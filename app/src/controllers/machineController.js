@@ -52,14 +52,14 @@ const getUserMachines = async (req, res) => {
                         })).map(elem => elem.gid)
                     }
                 },
-                attributes: ['id', 'name', 'is_private']
+                attributes: ['id', 'name', 'is_default']
             })
 
             for (elem of userGroups)
                 machines.push({
                     "id": elem.id,
                     "name": elem.name,
-                    "is_private": elem.is_private,
+                    "is_default": elem.is_default,
                     "machines": await Machine.findAll({
                         attributes: ['id', 'custom_name', 'address', 'port', 'is_active'],
                         where: {
@@ -124,7 +124,7 @@ const createMachine = async (req, res) => {
         await GroupMachineRelation.create({
             mid: machine.id,
             gid: (await Group.findOne({
-                where: { name: req.user.id, is_private: true } 
+                where: { name: req.user.id, is_default: true } 
             }, { transaction })).id
         }, { transaction });
         await transaction.commit();
@@ -150,12 +150,33 @@ const updateMachine = async (req, res) => {
 }
 
 const deleteMachine = async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
+        await GroupMachineRelation.destroy({
+            where: {
+                mid: req.params.id
+            }
+        }, { transaction });
+        
         await Machine.destroy({
             where: {
                 id: req.params.id
             }
-        });
+        } , { transaction });
+
+        await Group.decrement('num_machines', {
+            where: {
+                id: {
+                    [Op.in]: (await GroupMachineRelation.findAll({
+                        where: {
+                            mid: req.params.id
+                        }
+                    })).map(elem => elem.gid)
+                }
+            }
+        }, { transaction });
+
+        await transaction.commit();
         res.status(200).send("Macchina eliminata con successo");
     } catch (error) {
         sendError(error, res);
@@ -163,22 +184,35 @@ const deleteMachine = async (req, res) => {
     }
 }
 
-const addGroupToMachine = async (req, res) => {
+const addMachineToGroup = async (req, res) => {
+    var transaction = await sequelize.transaction();
     try {
         const { gid } = req.body;
         const mid = req.params.id;
         await GroupMachineRelation.create({
             mid: mid,
             gid: gid
+        }, { transaction });
+
+        await Group.increment('num_machines', {
+            by: 1,
+            where: {
+                id: gid
+            },
+            transaction: transaction
         });
+
+        await transaction.commit();
         res.status(200).send("Gruppo aggiunto con successo");
     } catch (error) {
+        await transaction.rollback();
         sendError(error, res);
         return;
     }
 }
 
-const removeGroupFromMachine = async (req, res) => {
+const removeMachineFromGroup = async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
         const { gid } = req.body;
         const mid = req.params.id;
@@ -191,9 +225,18 @@ const removeGroupFromMachine = async (req, res) => {
                 mid: mid,
                 gid: gid
             }
-        });
+        }, { transaction });
+
+        await Group.decrement('num_machines', {
+            where: {
+                id: gid
+            }
+        }, { transaction });
+
+        await transaction.commit();
         res.status(200).send("Gruppo rimosso con successo");
     } catch (error) {
+        await transaction.rollback();
         sendError(error, res);
         return;
     }
@@ -224,7 +267,7 @@ module.exports = {
     createMachine,
     updateMachine,
     deleteMachine,
-    addGroupToMachine,
-    removeGroupFromMachine,
+    addMachineToGroup,
+    removeMachineFromGroup,
     checkUserMachine
 }

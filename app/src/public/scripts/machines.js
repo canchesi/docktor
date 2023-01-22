@@ -42,10 +42,10 @@ var printed = {};
                 var toPrint = [];
                 var machineCounter = 0;
                 data.sort((a, b) => a.machines.length == b.machines.length ? a.name.localeCompare(b.name) : b.machines.length - a.machines.length);
-                data.push(data.splice(data.indexOf(data.find(elem => elem.is_private)), 1)[0]);
+                data.push(data.splice(data.indexOf(data.find(elem => elem.is_default)), 1)[0]);
                 for (let i = 0; i < data.length; i++) {
                     var len = 0;
-                    if (!data[i].is_private) {
+                    if (!data[i].is_default) {
                         len = Object.values(data[i].machines).length;
                         if (!len)
                             len = [3, 8];
@@ -55,10 +55,10 @@ var printed = {};
                     toPrint.push('');
                     data[i].machines = data[i].machines.sort((a, b) => a.is_active == b.is_active ? a.custom_name.localeCompare(b.custom_name) : b.is_active - a.is_active);
                     toPrint[i] +=
-                        '<div class="card card-primary col-' + (len ? len[0] : 12) + ' mr-3 mt-3 pr-3 verdana" style="border-left: 5px solid var(' + (data[i].is_private ? "--dark" : "--color-secondary") + '); width: auto;" id="' + data[i].id + '"> \
+                        '<div class="card card-primary col-' + (len ? len[0] : 12) + ' mr-3 mt-3 pr-3 verdana" style="border-left: 5px solid var(' + (data[i].is_default ? "--dark" : "--color-secondary") + '); width: auto;" id="' + data[i].id + '"> \
                             <div class="content-header ml-2"> \
-                                <h3 class="float-left">' + (data[i].is_private ? 'Macchine dell\'utente' : data[i].name) + '</h3> \
-                                <button class="btn btn-info float-right ' + (data[i].is_private ? "" : "add-button") + '" id="add-machine' + (data[i].is_private ? "" : ("-" + data[i].id)) + '">Aggiungi macchina</button> \
+                                <h3 class="float-left">' + (data[i].is_default ? 'Macchine dell\'utente' : data[i].name) + '</h3> \
+                                <button class="btn btn-info float-right ' + (data[i].is_default ? "" : "add-button") + '" id="add-machine' + (data[i].is_default ? "" : ("-" + data[i].id)) + '">Aggiungi macchina</button> \
                             </div> \
                             <div class="content ml-3"> \
                                 <div class="row" style="">'
@@ -66,8 +66,8 @@ var printed = {};
                         toPrint[i] += '<div class="col-12 mb-2"><h4>Nessuna macchina</h4></div>'
                     else
                         for (machine of data[i].machines) {
-                            if(i == data.length - 1 && Object.values(printed).includes(machine.id))
-                                continue;
+                            //if(i == data.length - 1 && Object.values(printed).includes(machine.id))
+                            //    continue;
                             toPrint[i] +=
                                     '<div class="col-' + (len ? len[1] : 3) + '"> \
                                         <div class="info-box" style="border-left: 4px solid var(--' + (machine.is_active ? "success" : "danger") + ')"> \
@@ -75,8 +75,11 @@ var printed = {};
                                             <div class="info-box-content"> \
                                                 <span class="info-box-number"> ' + machine.custom_name + ' </span> \
                                                 <span class="info-box-text courier">' + ( machine.address + ':' + machine.port) + '</span> \
-                                            </div>' + (data[i].is_private ? '' : 
-                                            '<span class="btn bg-secondary machine-delete-button"> \
+                                            </div>' + (data[i].is_default ? ' \
+                                            <span class="btn bg-danger machine-delete-button"> \
+                                                <i class="fa-solid fa-trash" style="vertical-align: middle"></i> \
+                                            </span>' : 
+                                            '<span class="btn bg-secondary machine-delete-from-group-button"> \
                                                 <i class="fa-solid fa-xmark" style="vertical-align: middle"></i> \
                                             </span>') +
                                         '</div> \
@@ -147,14 +150,14 @@ var printed = {};
         })
     })
 
-    $('.add-button').click(() => {
+    $('.add-button').click((e) => {
         $('#machine-group-name').empty();
         $('#machine-group-add-modal').modal('show');
         $('#cancel-button-machine-group-add-modal').click(() => {
             $('#machine-group-add-modal').modal('hide');
         })
 
-        const groupId = event.target.id.split('-')[2];
+        const groupId = e.target.id.split('-')[2];
         $.ajax({
             url: '/api/machines/user?divided=1',
             type: 'GET',
@@ -191,7 +194,7 @@ var printed = {};
         })
     })
 
-    $('.machine-delete-button').click((e) => {
+    $('.machine-delete-from-group-button').click((e) => {
         const id = printed[e.delegateTarget.parentElement.children[0].id];
         $.ajax({
             url: '/api/machines/' + id + '/remove',
@@ -204,4 +207,15 @@ var printed = {};
             }
         })
     })
+
+    $('.machine-delete-button').click((e) => {
+        $.ajax({
+            url: '/api/machines/' + printed[e.delegateTarget.parentElement.children[0].id],
+            type: 'DELETE',
+            success: () => {
+                location.reload();
+            }
+        })
+    })
+
 })

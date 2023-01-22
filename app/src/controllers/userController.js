@@ -29,7 +29,7 @@ const createUser = async (req, res) => {
         const group = await Group.create({
             name: user.id,
             num_members: 1,
-            is_private: true
+            is_default: true
         }, { transaction });
         await UserGroupRelation.create({
             uid: user.id,
@@ -102,7 +102,7 @@ const deleteUser = async (req, res) => {
         const group = await Group.findOne({
             where: {
                 name: req.params.id,
-                is_private: true
+                is_default: true
             }
         });
         await UserGroupRelation.destroy({
@@ -131,7 +131,7 @@ const deleteUser = async (req, res) => {
         await Group.destroy({
             where: {
                 name: req.params.id,
-                is_private: true
+                is_default: true
             }
         }, { transaction });
         await Info.destroy({

@@ -1,3 +1,4 @@
+const GroupMachineRelation = require('../models/groupMachineModel');
 const Group = require('../models/groupModel');
 const UserGroupRelation = require('../models/userGroupModel');
 const sequelize = require('../utils/dbConnect');
@@ -7,7 +8,7 @@ const sendError = require('../utils/sendError');
 const getGroups = async (req, res) => {
     try {
         const groups = await Group.findAll({
-            attributes: getTrueFields(req.query) || ['id', 'name', 'num_members', 'is_private']
+            attributes: getTrueFields(req.query) || ['id', 'name', 'num_machines', 'is_default']
         });
         if (groups)
             res.status(200).send(groups);
@@ -24,7 +25,7 @@ const getGroup = async (req, res) => {
         where: {
             id: req.params.id
         }, 
-        attributes: getTrueFields(req.query)
+        attributes: getTrueFields(req.query) || ['id', 'name', 'num_machines', 'is_default']
     });
     if (group)
         res.status(200).send(group);
@@ -47,7 +48,7 @@ const getUserGroups = async (req, res) => {
                 where: {
                     id: groups.map(g => g.gid)
                 },
-                attributes: getTrueFields(req.query) || ['id', 'name', 'num_members', 'is_private']
+                attributes: getTrueFields(req.query) || ['id', 'name', 'num_machines', 'is_default']
             });
         else {
             res.status(404).send("Nessun gruppo trovato");
@@ -65,14 +66,24 @@ const getUserGroups = async (req, res) => {
 }
 
 const createGroup = async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
-        const { name, num_members } = req.body;
-        await Group.create({
+        const { name } = req.body;
+
+        const group = await Group.create({
             name: name,
-            num_members: num_members || 0,
-            is_private: false
-        });
+            num_machines: 0,
+            is_default: false
+        }, { transaction });
+
+        await UserGroupRelation.create({
+            uid: req.user.id,
+            gid: group.id
+        }, { transaction });
+
+        await transaction.commit();
     } catch (error) {
+        await transaction.rollback();
         sendError(error, res);
         return;
     }
@@ -95,8 +106,13 @@ const updateGroup = async (req, res) => {
 
 const deleteGroup = async (req, res) => {
     try {
-        if (await Group.findOne({where: {id: req.params.id, is_private: false}})) {
+        if (await Group.findOne({where: {id: req.params.id, is_default: false}})) {
             const transaction = await sequelize.transaction();
+            await GroupMachineRelation.destroy({
+                where: {
+                    gid: req.params.id
+                }
+            }, { transaction });
             await UserGroupRelation.destroy({
                 where: {
                     gid: req.params.id
@@ -120,14 +136,14 @@ const deleteGroup = async (req, res) => {
     res.status(200).send("Gruppo cancellato con successo");
 }
 
-const addUserToGroup = async (req, res) => {
+/* const addUserToGroup = async (req, res) => {
     const { uid } = req.body;
     const gid = req.params.id;
     const transaction = await sequelize.transaction();
     if(await Group.findOne({
         where: {
             id: gid,
-            is_private: true
+            is_default: true
         }})) {
         res.status(403).send("Gruppo privato");
         return;
@@ -158,7 +174,7 @@ const removeUserFromGroup = async (req, res) => {
     if (await Group.findOne({
         where: {
             id: gid,
-            is_private: true
+            is_default: true
         }
     })) {
         res.status(403).send("Gruppo privato");
@@ -184,6 +200,7 @@ const removeUserFromGroup = async (req, res) => {
     }
     res.status(200).send("Membro rimosso con successo");
 }
+*/
 
 module.exports = {
     getGroups,
@@ -191,7 +208,7 @@ module.exports = {
     getUserGroups,
     createGroup,
     updateGroup,
-    deleteGroup,
+    deleteGroup/*,
     addUserToGroup,
-    removeUserFromGroup
+    removeUserFromGroup*/
 }
