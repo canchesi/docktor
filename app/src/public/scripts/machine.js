@@ -24,10 +24,10 @@ const types = {
 }
 
 const buttons = {
-    'running': '<button class="btn btn-secondary btn-container mr-1" value="pause"><i class="fa-solid fa-pause"></i></button><button class="btn bg-gray-dark btn-container" value="stop"><i class="fa-solid fa-stop"></i></button>',
-    'exited': '<button class="btn bg-olive btn-container mr-1" value="start"><i class="fa-solid fa-play"></i></button><button class="btn bg-danger btn-delete container-delete"><i class="fa-solid fa-trash"></i></button>',
-    'paused': '<button class="btn bg-olive btn-container mr-1" value="unpause"><i class="fa-solid fa-play"></i></button><button class="btn bg-gray-dark btn-container" value="stop"><i class="fa-solid fa-stop"></i></button>',
-    'created': '<button class="btn bg-olive btn-container mr-1" value="start"><i class="fa-solid fa-play"></i></button><button class="btn bg-danger btn-delete container-delete"><i class="fa-solid fa-trash"></i></button>'
+    'running': '<button class="btn btn-secondary btn-container" value="pause"><i class="fa-solid fa-pause"></i></button><button class="btn bg-gray-dark btn-container" value="stop"><i class="fa-solid fa-stop"></i></button>',
+    'exited': '<button class="btn bg-olive btn-container" value="start"><i class="fa-solid fa-play"></i></button><button class="btn bg-danger btn-delete container-delete"><i class="fa-solid fa-trash"></i></button>',
+    'paused': '<button class="btn bg-olive btn-container" value="unpause"><i class="fa-solid fa-play"></i></button><button class="btn bg-gray-dark btn-container" value="stop"><i class="fa-solid fa-stop"></i></button>',
+    'created': '<button class="btn bg-olive btn-container" value="start"><i class="fa-solid fa-play"></i></button><button class="btn bg-danger btn-delete container-delete"><i class="fa-solid fa-trash"></i></button>'
 }
 
 const volumeButton = '<button class="btn bg-danger btn-delete volume-delete"><i class="fa-solid fa-trash"></i></button>'
