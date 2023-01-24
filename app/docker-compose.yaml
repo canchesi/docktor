@@ -2,7 +2,7 @@ version: '3'
 
 services:
   docktor:
-    image: docktor
+    image: canchesi/docktor
     restart: unless-stopped
     ports:
       - 8443:8443

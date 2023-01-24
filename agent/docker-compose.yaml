@@ -2,7 +2,7 @@ version: '3'
 
 services:
   agent:
-    image: docktor-agent #'canchesi/docktor-agent:latest'
+    image: 'canchesi/docktor-agent'
     container_name: 'docktor-agent'
     restart: unless-stopped
     volumes:
