@@ -4,23 +4,24 @@ const User = require('../models/userModel');
 const Group = require('../models/groupModel');
 const Info = require('../models/infoModel');
 const UserGroupRelation = require('../models/userGroupModel');
+const GroupMachineRelation = require('../models/groupMachineModel');
+const Machine = require('../models/machineModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const getTrueFields = require('../utils/getTrueFields');
 const checkAllFields = require('../utils/checkAllFields');
 const sendError = require('../utils/sendError');
 const { join } = require('path');
-const GroupMachineRelation = require('../models/groupMachineModel');
 
 const createUser = async (req, res) => {
-
+    
     const transaction = await sequelize.transaction();
     const { user, info } = req.body;
     if (!checkAllFields([user.email, user.passwd])) {
         res.status(400).send("Richiesta non valida");
         return;
     }
-    console.log(req.body);
+
     try {
 
         const createdUser = await User.create({
@@ -37,7 +38,6 @@ const createUser = async (req, res) => {
             gid: group.id
         }, { transaction });
 
-        console.log(info);
         if (info != {} && info != undefined) {
             await Info.create({
                 uid: createdUser.id,
@@ -108,49 +108,56 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     const transaction = await sequelize.transaction();
-    try {
-        if (req.params.id == 1)
-            throw new Error("Non puoi cancellare l'utente di default");
-        const group = await Group.findOne({
+    try {       
+        
+        const userGroups = await UserGroupRelation.findAll({
             where: {
-                name: req.params.id,
-                is_default: true
+                uid: req.params.id || req.user.id
             }
-        });
+        }, { transaction });
+
+        const userMachines = await GroupMachineRelation.findAll({
+            where: {
+                gid: userGroups.map(ug => ug.gid)
+            }
+        }, { transaction });
+
         await UserGroupRelation.destroy({
             where: {
-                uid: req.params.id
+                uid: req.params.id || req.user.id
             }
         }, { transaction });
-        for (rel of await UserGroupRelation.findAll({ where: { uid: req.params.id }, attributes: ['gid'] })) {
-            await Group.decrement('num_machines', {
-                by: 1,
-                where: {
-                    id: rel.gid
-                }
-            }, { transaction });
-        }
+
         await GroupMachineRelation.destroy({
             where: {
-                gid: group.id
+                gid: userGroups.map(ug => ug.gid)
             }
         }, { transaction });
-        await User.destroy({
+
+        await Machine.destroy({
             where: {
-                id: req.params.id
+                id: userMachines.map(um => um.mid)
             }
         }, { transaction });
+
         await Group.destroy({
             where: {
-                name: req.params.id,
-                is_default: true
+                id: userGroups.map(ug => ug.gid)
             }
         }, { transaction });
+
         await Info.destroy({
             where: {
-                uid: req.params.id
+                uid: req.params.id || req.user.id
             }
         }, { transaction });
+
+        await User.destroy({
+            where: {
+                id: req.params.id || req.user.id
+            }
+        }, { transaction });
+
         await transaction.commit();
         res.status(200).send("Cancellazione avvenuta con successo");
     } catch (error) {
@@ -195,8 +202,13 @@ const loginUser = async (req,  res) => {
 
 const logoutUser = async (req, res) => {
     try {
-        const token = req.headers["X-Access-Token"] || req.cookies.token;
-        const user = await User.findOne({ where: { token } });
+        const token = req.cookies.token;
+        var user = await User.findOne({ where: { token: token } });
+        if (req.query.elimina) {
+            res.cookie('token', '', { maxAge: 0 });
+            res.redirect(303, '/login');
+            return;
+        }
 
         if (!(user && token))
             res.redirect(303, '/login');

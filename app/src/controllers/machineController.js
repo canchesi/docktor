@@ -113,7 +113,6 @@ const createMachine = async (req, res) => {
             res.status(400).send("Richiesta non valida");
             return;
         }
-        console.log(is_active);
         const transaction = await sequelize.transaction();
         const machine = await Machine.create({
             custom_name: custom_name,

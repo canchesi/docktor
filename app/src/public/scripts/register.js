@@ -22,7 +22,7 @@ const checkDate = (date) => {
 
 const checkInfo = (data) => {
     const { user, info } = data;
-    const checkPassword = $('#conferma-password').val()
+    const checkPasswordValue = $('#conferma-password').val()
     
     if (!checkEmail(user.email)) {
         $('#email').removeClass('is-valid').addClass('is-invalid');
@@ -30,7 +30,7 @@ const checkInfo = (data) => {
     } else if (!checkPassword(user.passwd)) {
         $('#password').removeClass('is-valid').addClass('is-invalid');
         return false;
-    } else if (!checkPasswordMatch(user.passwd, checkPassword)) {
+    } else if (!checkPasswordMatch(user.passwd, checkPasswordValue)) {
         $('#conferma-password').removeClass('is-valid').addClass('is-invalid');
         return false;
     } else if (!checkGender(info.gender)) {
@@ -59,7 +59,7 @@ $('#register-button').click(() => {
             birth_date: new Date($('#data-di-nascita').val())
         }
     }
-    if (checkInfo(data)) {
+    if (checkInfo(data))
         $.ajax({
             url: '/api/register',
             type: 'POST',
@@ -67,9 +67,14 @@ $('#register-button').click(() => {
             contentType: 'application/json',
             success: () => {
                 window.location.href = '/login';
+            },
+            error: (err) => {
+                if (err.status === 409) {
+                    $('#email').removeClass('is-valid').addClass('is-invalid');
+                } else {
+                    console.log(err);
+                }
             }
         })
-    } else {
-        console.log(data);
-    }
+    
 });

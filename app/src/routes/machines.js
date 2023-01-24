@@ -13,7 +13,7 @@ const alreadyExists = require('../middleware/alreadyExists');
 
 machines.get('/', getMachines);
 machines.get('/user', getUserMachines);
-machines.post('/create', alreadyExists('machine', false), createMachine);
+machines.post('/create', createMachine);
 
 machines.use('/:id', alreadyExists('machine', true)); // middleware comune
 

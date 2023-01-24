@@ -106,6 +106,32 @@ $('#access-save').click(() => {
     }
 })
 
+$('#delete-account').click(() => {
+    $('#delete-account-modal').modal('show')
+    $('#cancel-button-delete-account-modal').click(() => {
+        $('#delete-account-modal').modal('hide')
+    })
+
+    $('#confirm-button-delete-account-modal').click(() => {
+        $.ajax({
+            url: '/api/users/' + $('#id').val(),
+            type: 'DELETE',
+            success: () => {
+                $.ajax({
+                    url: '/logout?eliminato=true',
+                    type: 'GET',
+                    success: () => {
+                        window.location.href = '/'
+                    },
+                    error: () => {
+                        window.location.href = '/'
+                    }
+                })
+            }
+        })
+    })
+})
+
 // Popolazioe gruppi
 $.ajax({
     url: '/api/groups/this',

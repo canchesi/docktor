@@ -83,6 +83,7 @@
                     <button class="btn bg-olive" id="info-save">Aggiorna</button>    
                 </div>
             </div>
+            <button class="btn bg-danger" id="delete-account">Elimina account</button>
         </div>
         <div class="col-6">
             <div class="card card-info" style="height: 90vh;">
@@ -129,6 +130,28 @@
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" id="cancel-button-group-create-modal">Annulla</button>
                     <button type="button" class="btn bg-olive" id="confirm-button-group-create-modal">Crea</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="delete-account-modal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="justify-content: left;">
+                    <h4 class="modal-title" id="delete-account-title">
+                        Cancellazione account
+                    </h4>
+                    <h4 id="delete-acocunt-error" class="ml-1"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        Cancellando l'account rimuoverai tutti i dati relativi a te e le tue macchine.
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" id="cancel-button-delete-account-modal">Annulla</button>
+                    <button type="button" class="btn bg-danger" id="confirm-button-delete-account-modal">Elimina</button>
                 </div>
             </div>
         </div>

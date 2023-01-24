@@ -14,7 +14,6 @@ const machine = sequelize.define('machine', {
     address: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
     },
     port: {
         type: DataTypes.INTEGER,
