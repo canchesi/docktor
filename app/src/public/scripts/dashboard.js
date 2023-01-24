@@ -1,7 +1,7 @@
 const getContainers = ({ address, port, id, machine }) => {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: 'http://' + address + ':' + port + '/api/containers/json?all=1',
+            url: 'https://' + address + ':' + port + '/api/containers/json?all=1',
             type: 'GET',
             success: (data) => {
                 data = JSON.parse(data);
@@ -20,7 +20,7 @@ const getContainers = ({ address, port, id, machine }) => {
 const getVolumes = ({ address, port, id, machine }) => {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: 'http://' + address + ':' + port + '/api/volumes',
+            url: 'https://' + address + ':' + port + '/api/volumes',
             type: 'GET',
             success: (data) => {
                 data = JSON.parse(data);
@@ -146,4 +146,6 @@ $.ajax({
     success: (data) => {
         dashboardCreate(data)
     }
+}).then(() => {
+    $('.overlay').hide();
 })

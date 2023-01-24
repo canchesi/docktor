@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <head>
     <title>Docktor</title>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <!-- Style and scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/icons@2.1.0/css/all.css">
     <script src="https://kit.fontawesome.com/116143211a.js" crossorigin="anonymous"></script>
     <!-- Personal style and scirpts -->
     <link rel="stylesheet" href="/style">
-    <script src="/scripts/sidebar" defer></script>
+    <script src="/scripts/navbar" defer></script>
     <script src="/scripts/dashboard" defer></script>
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
 <body>
-    <div id="sidebar"></div>
-    <div class="row dashboard-row">
+    <div id="navbar"></div>
+    <div class="row" style="padding: 1%; margin: 0;">
         <div class="col-md-4 col-sm-6 col-xs-12 mt-3">
             <div class="info-box" id="machines-info">
                 <span class="info-box-icon bg-olive">
@@ -71,7 +72,7 @@
             </div>
         </div>
         <div class="col-md-4 col-sm-6 col-xs-12">
-            <div class="info-box div-dash-table" id="machines" style="height: 80vh;">
+            <div class="info-box div-dash-table" id="machines">
                 <table class="table table-striped" style="height: fit-content;">
                     <thead>
                         <tr>
@@ -85,7 +86,7 @@
             </div>
         </div>
         <div class="col-md-4 col-sm-6 col-xs-12">
-            <div class="info-box div-dash-table" id="containers" style="height: 80vh;">
+            <div class="info-box div-dash-table" id="containers">
                 <table class="table table-striped" style="height: fit-content;">
                     <thead>
                         <tr>
@@ -100,7 +101,7 @@
             </div>
         </div>
         <div class="col-md-4 col-sm-6 col-xs-12">
-            <div class="info-box div-dash-table" id="volumes" style="height: 80vh;">
+            <div class="info-box div-dash-table" id="volumes">
                 <table class="table table-striped" style="height: fit-content; table-layout: fixed;">
                     <thead>
                         <tr>

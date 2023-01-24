@@ -55,10 +55,10 @@ var printed = {};
                     toPrint.push('');
                     data[i].machines = data[i].machines.sort((a, b) => a.is_active == b.is_active ? a.custom_name.localeCompare(b.custom_name) : b.is_active - a.is_active);
                     toPrint[i] +=
-                        '<div class="card card-primary col-' + (len ? len[0] : 12) + ' mr-3 mt-3 pr-3 verdana" style="border-left: 5px solid var(' + (data[i].is_default ? "--dark" : "--color-secondary") + '); width: auto;" id="' + data[i].id + '"> \
+                        '<div class="card card-primary col-' + (len ? len[0] : 12) + ' m-3 pr-3 verdana" style="border-left: 5px solid var(' + (data[i].is_default ? "--dark" : "--color-secondary") + '); width: auto;" id="' + data[i].id + '"> \
                             <div class="content-header ml-2"> \
                                 <h3 class="float-left">' + (data[i].is_default ? 'Macchine dell\'utente' : data[i].name) + '</h3> \
-                                <button class="btn btn-info float-right ' + (data[i].is_default ? "" : "add-button") + '" id="add-machine' + (data[i].is_default ? "" : ("-" + data[i].id)) + '">Aggiungi macchina</button> \
+                                <button class="btn bg-' + (data[i].is_default ? "olive" : "info") + ' float-right ' + (data[i].is_default ? "" : "add-button") + '" id="add-machine' + (data[i].is_default ? "" : ("-" + data[i].id)) + '">' + (data[i].is_default ? "Nuova" : "Aggiungi") + ' macchina</button> \
                             </div> \
                             <div class="content ml-3"> \
                                 <div class="row" style="">'

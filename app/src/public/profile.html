@@ -9,15 +9,15 @@
     <script src="https://kit.fontawesome.com/116143211a.js" crossorigin="anonymous"></script>
     <!-- Personal style and scirpts -->
     <link rel="stylesheet" href="/style">
-    <script src="/scripts/sidebar" defer></script>
+    <script src="/scripts/navbar" defer></script>
     <script src="/scripts/profile" defer></script>
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
 <body>
-    <div id="sidebar"></div>
-    <div class="row" style="margin: 0">
-        <div class="dashboard-row mt-4 pl-3 col-5" style="margin-right: 0">
+    <div id="navbar"></div>
+    <div class="row pt-3 pl-2" style="margin: 0;">
+        <div class="col-6">
             <div class="card card-info" style="padding: 0;">
                 <div class="card-header">
                     <h3 class="card-title">Accesso</h3>
@@ -84,24 +84,26 @@
                 </div>
             </div>
         </div>
-        <div class="card card-info col-5 ml-2 mt-4" style="padding: 0; height: 95vh;">
-            <div class="card-header">
-                <h3 class="card-title" style="padding-top: 0.5rem;">Gruppi</h3>
-                <button class="btn bg-info float-right" id="group-create-button"><i class="fas fa-plus"></i></button>
-            </div>
-            <div class="card-body">
-                <table class="table table-sm" style="text-align: center;" id="group-table">
-                    <thead>
-                        <tr>
-                            <th class="col-1">ID</th>
-                            <th class="col-7">Gruppo</th>
-                            <th class="col-3">N. macchine</th>
-                            <th class="col-1">Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody id="groups">
-                    </tbody>
-                </table>
+        <div class="col-6">
+            <div class="card card-info" style="height: 90vh;">
+                <div class="card-header">
+                    <h3 class="card-title" style="padding-top: 0.5rem;">Gruppi</h3>
+                    <button class="btn bg-info float-right" id="group-create-button"><i class="fas fa-plus"></i></button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm" style="text-align: center;" id="group-table">
+                        <thead>
+                            <tr>
+                                <th class="col-1">ID</th>
+                                <th class="col-7">Gruppo</th>
+                                <th class="col-3">N. macchine</th>
+                                <th class="col-1">Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="groups">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

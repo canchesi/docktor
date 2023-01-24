@@ -11,84 +11,90 @@
     <script src="https://kit.fontawesome.com/116143211a.js" crossorigin="anonymous"></script>
     <!-- Personal style and scirpts -->
     <link rel="stylesheet" href="/style">
-    <script src="/scripts/sidebar" defer></script>
+    <script src="/scripts/navbar" defer></script>
     <script src="/scripts/machine" defer></script>
 </head>
 <body>
-    <div id="sidebar"></div>
-    <div class="dashboard-row mt-4 mr-3" >
-        <div class="card card-info" style="padding: 0;">
-            <div class="card-header">
-                <h3 class="card-title">Informazioni</h3>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="form-group col-1">
-                        <label for="id">ID</label>
-                        <input type="text" class="form-control" id="id" disabled>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="name">Nome macchina</label>
-                        <input type="text" class="form-control" id="name" placeholder="Nome">
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="address">Indirizzo</label>
-                        <input type="text" class="form-control" id="address" placeholder="URL, IPv4 o IPv6">
-                    </div>
-                    <div class="form-group col-3">
-                        <label for="port">Porta</label>
-                        <input type="text" inputmode="numeric" class="form-control" id="port" placeholder="Es.: 8080" >
-                    </div>
+    <div id="navbar"></div>
+    <div class="row mt-4" style="margin: 0; padding: 0.5%;">
+        <div class="col-12"> 
+            <div class="card card-info" style="padding: 0">
+                <div class="card-header">
+                    <h3 class="card-title">Informazioni</h3>
                 </div>
-                <button class="btn bg-olive" id="save">Aggiorna</button>    
-                <input type="checkbox" id="is_active" class="ml-3">
-                <label for="is_active" class="ml-2">Macchina attiva</label>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-1">
+                            <label for="id">ID</label>
+                            <input type="text" class="form-control" id="id" disabled>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="name">Nome macchina</label>
+                            <input type="text" class="form-control" id="name" placeholder="Nome">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="address">Indirizzo</label>
+                            <input type="text" class="form-control" id="address" placeholder="URL, IPv4 o IPv6">
+                        </div>
+                        <div class="form-group col-3">
+                            <label for="port">Porta</label>
+                            <input type="text" inputmode="numeric" class="form-control" id="port" placeholder="Es.: 8080" >
+                        </div>
+                    </div>
+                    <button class="btn bg-olive" id="save">Aggiorna</button>    
+                    <input type="checkbox" id="is_active" class="ml-3">
+                    <label for="is_active" class="ml-2">Macchina attiva</label>
+                </div>
             </div>
         </div>
     </div>
-    <div class="row mt-4 mr-3" style="margin-left: 0;">
-        <div class="dashboard-row card card-info col-5" id="card-containers" style="padding: 0;">
-            <div class="card-header">
-                <h3 class="card-title" style="padding-top: 0.5rem;">Containers</h3>
-                <button class="btn bg-info float-right" id="container-create" title="Crea nuovo container"><i class="fa-solid fa-plus"></i></button>
-                <button class="btn bg-info float-right" id="container-refresh" title="Aggiorna"><i class="fa-solid fa-refresh"></i></button>
-            </div>
-            <div class="card-body" id="div-table" style="padding:0; overflow-y: auto; display: block;">
-                <table class="table table-bordered table-hover" id="table-containers" style="text-align: center;">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>Status</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    </tbody>
-                </table>    
+    <div class="row" style="margin: 0; padding: 0.5%;">
+        <div class="col-6">
+            <div class="card card-info" id="card-containers" style="padding: 0;">
+                <div class="card-header">
+                    <h3 class="card-title" style="padding-top: 0.5rem;">Containers</h3>
+                    <button class="btn bg-info float-right" id="container-create" title="Crea nuovo container"><i class="fa-solid fa-plus"></i></button>
+                    <button class="btn bg-info float-right" id="container-refresh" title="Aggiorna"><i class="fa-solid fa-refresh"></i></button>
+                </div>
+                <div class="card-body" id="div-table" style="padding:0; overflow-y: auto; display: block;">
+                    <table class="table table-bordered table-hover" id="table-containers" style="text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Status</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                        </tbody>
+                    </table>    
+                </div>
             </div>
         </div>
-        <div class="card card-info col-5 ml-auto" id="card-volume" style="padding: 0;">
-            <div class="card-header">
-                <h3 class="card-title" style="padding-top: 0.5rem;">Volumi</h3>
-                <button class="btn bg-info btn-create float-right" id="volume-create" title="Crea nuovo container"><i class="fa-solid fa-plus"></i></button>
-                <button class="btn bg-info btn-refresh float-right" id="volume-refresh"><i class="fa-solid fa-refresh" title="Aggiorna"></i></button>
-                <button class="btn bg-info btn-prune float-right" id="volume-prune"><i class="fa-solid fa-trash" title="Elimina volumi inutilizzati"></i></button>
-            </div>
-            <div class="card-body" id="div-table-volumes" style="padding: 0">
-                <table class="table table-bordered table-hover" id="table-volumes" style="text-align: center; table-layout: fixed;">
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>ID/HostPath</th>
-                            <th>Mount point</th>
-                            <th>Container</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody id="volume-table">
-                    </tbody>
-                </table>    
+        <div class="col-6">
+            <div class="card card-info" id="card-volume" style="padding: 0;">
+                <div class="card-header">
+                    <h3 class="card-title" style="padding-top: 0.5rem;">Volumi</h3>
+                    <button class="btn bg-info btn-create float-right" id="volume-create" title="Crea nuovo container"><i class="fa-solid fa-plus"></i></button>
+                    <button class="btn bg-info btn-refresh float-right" id="volume-refresh"><i class="fa-solid fa-refresh" title="Aggiorna"></i></button>
+                    <button class="btn bg-info btn-prune float-right" id="volume-prune"><i class="fa-solid fa-trash" title="Elimina volumi inutilizzati"></i></button>
+                </div>
+                <div class="card-body" id="div-table-volumes" style="padding: 0">
+                    <table class="table table-bordered table-hover" id="table-volumes" style="text-align: center; table-layout: fixed;">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>ID/HostPath</th>
+                                <th>Mount point</th>
+                                <th>Container</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="volume-table">
+                        </tbody>
+                    </table>    
+                </div>
             </div>
         </div>
     </div>

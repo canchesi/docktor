@@ -152,19 +152,8 @@ const updateMachine = async (req, res) => {
 const deleteMachine = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
-        await GroupMachineRelation.destroy({
-            where: {
-                mid: req.params.id
-            }
-        }, { transaction });
-        
-        await Machine.destroy({
-            where: {
-                id: req.params.id
-            }
-        } , { transaction });
-
         await Group.decrement('num_machines', {
+            by: 1,
             where: {
                 id: {
                     [Op.in]: (await GroupMachineRelation.findAll({
@@ -175,6 +164,18 @@ const deleteMachine = async (req, res) => {
                 }
             }
         }, { transaction });
+        
+        await GroupMachineRelation.destroy({
+            where: {
+                mid: req.params.id
+            }
+        }, { transaction });
+
+        await Machine.destroy({
+            where: {
+                id: req.params.id
+            }
+        } , { transaction });
 
         await transaction.commit();
         res.status(200).send("Macchina eliminata con successo");

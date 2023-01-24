@@ -60,11 +60,6 @@ textarea {
     vertical-align: middle;
 }
 
-.dashboard-row {
-    margin-left: 270px;
-    margin-right: 0;
-}
-
 .machine-btn {
     text-align: left;
 }
@@ -86,6 +81,8 @@ textarea {
 .div-dash-table {
     overflow: auto;
     table-layout: fixed;
+    height: 77vh;
+    margin-bottom: 0;
 }
 
 .machine-delete-button, .machine-delete-from-group-button {
@@ -112,11 +109,11 @@ textarea {
     display: inline-block;
 }
 
-.main-sidebar {
+.main-navbar {
     background-color: var(--color-primary);
 }
 
-[class*="sidebar-light"] .brand-link {
+[class*="navbar-light"] .brand-link {
     text-align: center;
     border-bottom: 1px solid var(--color-primary);
     background: var(--color-primary);
@@ -135,6 +132,10 @@ textarea {
     font-size: 1.1rem;
     text-align: center;
 }*/
+
+.dropdown-item:hover {
+    background-color: var(--color-primary);
+}
 
 /* IDs */
 
@@ -157,7 +158,7 @@ textarea {
     scale: 1.4;
 }
 
-#sidebar-image {
+#navbar-image {
     scale: 1.4;
 
 }
@@ -175,5 +176,5 @@ textarea {
 }
 
 #card-containers, #card-volume {
-    height: 50vh;
+    height: 60vh;
 }

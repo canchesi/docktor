@@ -52,7 +52,7 @@ const checkIPv6 = (ip) => {
 const getContainersFromHost = (callback) => {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/json?all=1',
+            url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/json?all=1',
             type: 'GET',
             success: (data) => {
                 callback(data);
@@ -68,7 +68,7 @@ const getContainersFromHost = (callback) => {
 const getVolumesFromHost= (callback) => {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes',
+            url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes',
             type: 'GET',
             success: (data) => {
                 callback(data, false);
@@ -240,7 +240,7 @@ const containerButtonsActions = () => {
     $('.btn-container') .click(function () {
         const id = $(this).parent().parent().children()[0].innerHTML;
         $.ajax({
-            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/' + id + '/' + $(this).val(),
+            url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/' + id + '/' + $(this).val(),
             type: 'POST',
             success: () => {
                 getContainersFromHost((data) => {
@@ -273,7 +273,7 @@ const containerButtonsActions = () => {
         $("#confirm-button-container-modal").click(() => {
             var volumes;
             $.ajax({
-                url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/' + id + '/json',
+                url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/' + id + '/json',
                 type: 'GET',
                 success: (data) => {
                     volumes = JSON.parse(data).Mounts
@@ -281,13 +281,13 @@ const containerButtonsActions = () => {
                 }
             }).then(() => {
                 $.ajax({
-                    url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/' + id,
+                    url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/' + id,
                     type: 'DELETE'
                 }).then(() => {
                     if(deleted > 0)
                         for (volume of volumes)
                             $.ajax({
-                                url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/' + volume.Name + '?force=1',
+                                url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/' + volume.Name + '?force=1',
                                 type: 'DELETE',
                                 success:() => {
                                     if(!--deleted)
@@ -306,7 +306,7 @@ const volumeButtonsActions = () => {
     $('.volume-delete').click(function () {
         const id = $(this).parent().parent().children()[1].innerHTML;
         $.ajax({
-            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/' + id + '?force=1',
+            url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/' + id + '?force=1',
             type: 'DELETE',
             success: () => {
                 location.reload();
@@ -394,7 +394,7 @@ $('#container-create').click(() => {
                 data.NetworkDisabled = $('#networking').val() == 'false';
             }
             $.ajax({
-                url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/create?name=' + $('#nome').val(),
+                url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/containers/create?name=' + $('#nome').val(),
                 type: 'POST',
                 data: JSON.stringify(data),
                 headers: {
@@ -414,7 +414,7 @@ $('#container-create').click(() => {
                             $('#pull-image').click(() => {
                                 $('#pull-image').html('<i class="fas fa-spinner fa-spin"></i> Scaricamento in corso...');
                                 $.ajax({
-                                    url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/images/create?fromImage=' + image[0] + '&tag=' + image[1],
+                                    url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/images/create?fromImage=' + image[0] + '&tag=' + image[1],
                                     type: 'POST',
                                     success: () => {
                                         $('#pull-image').html('<i class="fas fa-check"></i> Immagine scaricata');
@@ -512,7 +512,7 @@ $('#volume-create').click(() => {
 
     $('#confirm-button-volume-create-modal').click(() => {
         $.ajax({
-            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/create',
+            url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/create',
             type: 'POST',
             data: {
                 name: $('#nome-volume').val() || null,
@@ -545,7 +545,7 @@ $('#volume-prune').click(() => {
     $('#confirm-button-volume-prune-modal').click(() => {
         $('#volume-prune-modal').modal('hide');
         $.ajax({
-            url: 'http://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/prune',
+            url: 'https://' + $('#address').val() + ':' + $('#port').val() + '/api/volumes/prune',
             type: 'POST',
             success: function (data) {
                 location.reload();
@@ -605,7 +605,7 @@ $('#volume-prune').click(() => {
                     $(this).children(".edit").attr('hidden', 'false')
                     $(this).removeAttr('contenteditable');
                     $.ajax({
-                        url:"http://" + $('#address').val() + ":" + $('#port').val() + "/api/containers/" + $(this).parent().children()[0].innerHTML + "/rename?name=" + $(this).parent().children()[1].innerText,
+                        url:"https://" + $('#address').val() + ":" + $('#port').val() + "/api/containers/" + $(this).parent().children()[0].innerHTML + "/rename?name=" + $(this).parent().children()[1].innerText,
                         type: 'POST',
                         success: () => {
                             location.reload();
