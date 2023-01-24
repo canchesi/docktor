@@ -3,3 +3,5 @@ app/.env
 
 agent/node_modules
 ssl/
+
+docktor.sql

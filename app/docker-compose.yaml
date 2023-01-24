@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  docktor:
+    image: docktor
+    restart: unless-stopped
+    ports:
+      - 8443:8443
+    volumes:
+      - ./ssl:/app/ssl
+      - .env:/app/.env
+    depends_on:
+      - db
+    links:
+      - db
+      
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    expose:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./docktor.sql:/docker-entrypoint-initdb.d/docktor.sql
+      - docktor-db:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - 8085:80
+    environment:
+      PMA_ARBITRARY: 1
+
+volumes:
+  docktor-db:
