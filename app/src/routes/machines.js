@@ -15,7 +15,8 @@ machines.get('/', getMachines);
 machines.get('/user', getUserMachines);
 machines.post('/create', createMachine);
 
-machines.use('/:id', alreadyExists('machine', true)); // middleware comune
+// Middleware specifico per le rotte che richiedono un id di macchina
+machines.use('/:id', alreadyExists('machine', true));
 
 machines.get('/:id', getMachine);
 machines.post('/:id/add', alreadyExists('groupMachine', false), addMachineToGroup);

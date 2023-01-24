@@ -11,8 +11,11 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
         res.status(500).send("Errore interno");
         return;
     }
+
     if (typeof(checkType) == 'boolean') {
         switch (objType) {
+
+            // Fa controlli sull'esistenza di un utente
             case 'user':
                 if (Boolean(await User.findOne({
                     where: {
@@ -26,7 +29,9 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                     return;
                 }
                 break;
+                
             case 'group':
+                // Fa controlli sull'esistenza di un gruppo
                 if (Boolean(await Group.findOne({
                     where: {
                         [Op.or]: [
@@ -39,6 +44,8 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                     return;
                 }
                 break;
+            
+            // Fa controlli sull'esistenza di una serie di informazioni personali
             case 'info':
                 if (Boolean(await Info.findOne({
                     where: {
@@ -52,6 +59,8 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                     return;
                 }
                 break;
+
+            // Fa controlli sull'esistenza di una relazione tra utente e gruppo
             case 'userGroup':
                 if (Boolean(await UserGroupRelation.findOne({
                     where: {
@@ -66,6 +75,8 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                     return;
                 }
                 break;
+
+            // Fa controlli sull'esistenza di una macchina
             case 'machine':
                 if (Boolean(await Machine.findOne({
                     where: {
@@ -79,6 +90,8 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                     return;
                 }
                 break;
+
+            // Fa controlli sull'esistenza di una relazione tra gruppo e macchina
             case 'groupMachine':
                 if (Boolean(await GroupMachineRelation.findOne({
                     where: {

@@ -187,7 +187,6 @@ $.ajax({
     })
 
     $('.group-delete-button').click((e) => {
-        console.log(e.target.id.split('-')[2]);
         $.ajax({
             url: '/api/groups/' + e.delegateTarget.id.split('-')[2],
             type: 'DELETE',

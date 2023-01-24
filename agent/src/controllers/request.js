@@ -1,9 +1,12 @@
 const http = require('http');
-const createPath = require('../utils/query');
 
+// Converte la richiesta http in una richiesta http verso la socket di docker
 const request = async (req, res) => {
 
+    // Converte il body della richiesta in una stringa
     const body = JSON.stringify(req.body);
+
+    // Opzioni della richiesta
     const options = {
         socketPath: '/run/docker.sock',
         path: req.originalUrl.replace('/api',''),
@@ -16,8 +19,8 @@ const request = async (req, res) => {
         } : req.headers
     };
 
+    // Funzione che ritorna la risposta
     const returnResponse = (response) => {
-
         let result = {
             statusCode: response.statusCode,
             data: ''
@@ -33,8 +36,13 @@ const request = async (req, res) => {
 
     }
 
+    // Prepara la richiesta
     const dockerRequest = http.request(options, returnResponse)
+
+    // Scrive il body della richiesta
     dockerRequest.write(body || '');
+
+    // Chiude la richiesta
     dockerRequest.end();
 
 }

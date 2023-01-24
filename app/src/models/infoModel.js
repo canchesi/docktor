@@ -1,6 +1,7 @@
 const sequelize = require('../utils/dbConnect');
 const { DataTypes } = require('sequelize');
 
+// Modello per la tabella infos
 const info = sequelize.define('info', {
     uid: {
         type: DataTypes.INTEGER,

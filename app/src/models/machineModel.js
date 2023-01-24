@@ -1,6 +1,7 @@
 const sequelize = require('../utils/dbConnect');
 const { DataTypes } = require('sequelize');
 
+// Modello per la tabella machines
 const machine = sequelize.define('machine', {
     id: {
         type: DataTypes.INTEGER,

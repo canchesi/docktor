@@ -1,7 +1,7 @@
 const templates = require('express').Router();
 const { join } = require('path');
-const fs = require('fs');
 
+// Restituisce il file html richiesto
 templates.get('/:id', (req, res) => {
     res.sendFile(join(__dirname, `../templates/${req.params.id}.html`));
 })

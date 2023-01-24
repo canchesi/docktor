@@ -62,12 +62,10 @@ var printed = {};
                             </div> \
                             <div class="content ml-3"> \
                                 <div class="row" style="">'
-                    if (data[i].machines.length == 0 )//|| data[i].machines.map(elem => elem.id).every(elem => Object.values(printed).includes(elem)))
+                    if (data[i].machines.length == 0 )
                         toPrint[i] += '<div class="col-12 mb-2"><h4>Nessuna macchina</h4></div>'
                     else
                         for (machine of data[i].machines) {
-                            //if(i == data.length - 1 && Object.values(printed).includes(machine.id))
-                            //    continue;
                             toPrint[i] +=
                                     '<div class="col-' + (len ? len[1] : 3) + '"> \
                                         <div class="info-box" style="border-left: 4px solid var(--' + (machine.is_active ? "success" : "danger") + ')"> \
@@ -139,7 +137,6 @@ var printed = {};
                         location.reload()
                     },
                     error: (err) => {
-                        console.log(err.responseText);
                         if(err.responseText == "Macchina già presente")
                             $('#machine-address').addClass('is-invalid');
                         else
@@ -164,7 +161,6 @@ var printed = {};
             success: (data) => {
                 thisGroup = data.find(elem => elem.id == groupId);
                 data.splice(data.indexOf(thisGroup), 1);
-                console.log(thisGroup, data);
                 for(group of data) 
                     for (machine of group.machines) {
                         if (!thisGroup.machines.map(elem => elem.id).includes(machine.id)) {

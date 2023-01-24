@@ -1,3 +1,5 @@
+
+// Effettua controlli su errori noti e li invia al client
 const sendError = (error, res) => {
     if (error.original && error.original.hasOwnProperty('errno')) 
         switch (error.original.errno) {
@@ -15,7 +17,6 @@ const sendError = (error, res) => {
                 return;
         }
     res.status(501).send(error);
-    //res.status(501).send("Errore durante l'operazione");
 }
 
 module.exports = sendError;

@@ -11,6 +11,8 @@ const goTo = require('../middleware/goTo');
 
 const getMachines = async (req, res) => {
     try {
+        
+        // Effettua una SELECT <fields> FROM machines o SELECT * FROM machines
         const machines = await Machine.findAll({
             attributes: getTrueFields(req.query) || ['id', 'custom_name', 'address', 'port', 'is_active']
         });
@@ -25,6 +27,8 @@ const getMachines = async (req, res) => {
 }
 
 const getMachine = async (req, res) => {
+    
+    // Effettua una SELECT <fields> FROM machines WHERE id = req.params.id
     const machine = await Machine.findOne({
         where: {
             id: req.params.id
@@ -40,6 +44,8 @@ const getMachine = async (req, res) => {
 const getUserMachines = async (req, res) => {
     try {
         var machines;
+        
+        // Se la query contiene il campo "divided", restituisce le macchine dell'utente divise per gruppo
         if (req.query.divided == true) {
             machines = [];
             const userGroups = await Group.findAll({
@@ -54,7 +60,8 @@ const getUserMachines = async (req, res) => {
                 },
                 attributes: ['id', 'name', 'is_default']
             })
-
+            
+            // Prepara le macchine per ogni gruppo
             for (elem of userGroups)
                 machines.push({
                     "id": elem.id,
@@ -74,6 +81,8 @@ const getUserMachines = async (req, res) => {
                     })
                 });
         } else {
+
+            // Restituisce gli id delle macchine dell'utente
             var userMachines = Object.values(await GroupMachineRelation.findAll({
                 attributes: ['mid'],
                 where: {
@@ -87,6 +96,7 @@ const getUserMachines = async (req, res) => {
                 }
             }));
 
+            // Effettua una SELECT <fields> FROM machines WHERE id IN userMachines
             machines = await Machine.findAll({
                 attributes: getTrueFields(req.query) || ['id', 'custom_name', 'address', 'port', 'is_active'],
                 where: {
@@ -114,18 +124,29 @@ const createMachine = async (req, res) => {
             return;
         }
         const transaction = await sequelize.transaction();
+        
+        // Crea la macchina
         const machine = await Machine.create({
             custom_name: custom_name,
             address: address,
             port: port,
             is_active: is_active || false
         }, { transaction });
+
+        // Aggiunge la macchina al gruppo di default dell'utente
         await GroupMachineRelation.create({
             mid: machine.id,
             gid: (await Group.findOne({
                 where: { name: req.user.id, is_default: true } 
             }, { transaction })).id
         }, { transaction });
+
+        // Incrementa il numero di macchine del gruppo di default dell'utente
+        await Group.increment('num_machines', {
+            by: 1,
+            where: { name: req.user.id, is_default: true },
+            transaction: transaction
+        });
         await transaction.commit();
         res.status(200).send("Macchina creata con successo");
     } catch (error) {
@@ -136,6 +157,8 @@ const createMachine = async (req, res) => {
 
 const updateMachine = async (req, res) => {
     try {
+
+        // Aggiorna i dati della macchina
         await Machine.update(req.body, {
             where: {
                 id: req.params.id
@@ -151,6 +174,8 @@ const updateMachine = async (req, res) => {
 const deleteMachine = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
+
+        // Diminuisce il numero di macchine dei gruppi a cui appartiene la macchina
         await Group.decrement('num_machines', {
             by: 1,
             where: {
@@ -164,12 +189,15 @@ const deleteMachine = async (req, res) => {
             }
         }, { transaction });
         
+        // Elimina le relazioni tra la macchina e i gruppi
         await GroupMachineRelation.destroy({
             where: {
                 mid: req.params.id
             }
         }, { transaction });
 
+
+        // Elimina la macchina
         await Machine.destroy({
             where: {
                 id: req.params.id
@@ -189,11 +217,15 @@ const addMachineToGroup = async (req, res) => {
     try {
         const { gid } = req.body;
         const mid = req.params.id;
+
+        // Crea la relazione tra la macchina e il gruppo
         await GroupMachineRelation.create({
             mid: mid,
             gid: gid
         }, { transaction });
 
+
+        // Incrementa il numero di macchine del gruppo
         await Group.increment('num_machines', {
             by: 1,
             where: {
@@ -220,6 +252,8 @@ const removeMachineFromGroup = async (req, res) => {
             res.status(400).send("Richiesta non valida");
             return;
         }
+
+        // Elimina la relazione tra la macchina e il gruppo
         await GroupMachineRelation.destroy({
             where: {
                 mid: mid,
@@ -227,6 +261,7 @@ const removeMachineFromGroup = async (req, res) => {
             }
         }, { transaction });
 
+        // Decrementa il numero di macchine del gruppo
         await Group.decrement('num_machines', {
             where: {
                 id: gid
@@ -243,6 +278,8 @@ const removeMachineFromGroup = async (req, res) => {
 }
 
 const checkUserMachine = async (req, res, next) => {
+    
+    // Controlla se l'utente ha accesso alla macchina
     if (await GroupMachineRelation.findOne({
         where: {
             gid: {

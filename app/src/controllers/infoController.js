@@ -3,6 +3,8 @@ const getTrueFields = require('../utils/getTrueFields');
 const sendError = require('../utils/sendError');
 
 const getInfo = async (req, res) => {
+
+    // Effettua una SELECT <fields> FROM info WHERE uid = req.params.id o SELECT * FROM info WHERE uid = req.params.id
     const info = await Info.findOne({
         where: {
             uid: req.params.id || req.user.id
@@ -20,7 +22,9 @@ const getInfo = async (req, res) => {
 const createInfo = async (req, res) => {
     const { uid, first_name, last_name, gender, birth_date } = req.body;
     try {
-        Info.create({
+
+        // Crea delle nuove informazioni con i dati ricevuti
+        await Info.create({
             uid: uid,
             first_name: first_name,
             last_name: last_name,
@@ -37,6 +41,8 @@ const createInfo = async (req, res) => {
 
 const updateInfo = async (req, res) => {
     try {
+        
+        // Aggiorna le informazioni con i dati ricevuti
         await Info.update(req.body, {
             where: {
                 uid: req.params.uid || req.user.id
@@ -52,6 +58,8 @@ const updateInfo = async (req, res) => {
 const deleteInfo = async (req, res) => {
     const uid = req.params.id;
     try {
+
+        // Cancella le informazioni con l'id ricevuto
         await Info.destroy({
             where: {
                 uid: uid

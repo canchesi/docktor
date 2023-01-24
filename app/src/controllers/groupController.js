@@ -7,6 +7,8 @@ const sendError = require('../utils/sendError');
 
 const getGroups = async (req, res) => {
     try {
+    
+        // Effettua una SELECT <fields> FROM groups o SELECT * FROM groups
         const groups = await Group.findAll({
             attributes: getTrueFields(req.query) || ['id', 'name', 'num_machines', 'is_default']
         });
@@ -21,6 +23,8 @@ const getGroups = async (req, res) => {
 }
 
 const getGroup = async (req, res) => {
+
+    // Effettua una SELECT <fields> FROM groups WHERE id = req.params.id o SELECT * FROM groups WHERE id = req.params.id
     const group = await Group.findOne({
         where: {
             id: req.params.id
@@ -35,6 +39,8 @@ const getGroup = async (req, res) => {
 
 const getUserGroups = async (req, res) => {
     try {
+
+        // Effettua una SELECT gid FROM user_group WHERE uid = req.user.id
         var groups = await UserGroupRelation.findAll({
             where: {
                 uid: req.user.id
@@ -42,8 +48,9 @@ const getUserGroups = async (req, res) => {
             attributes: ['gid']
         })
 
-        console.log('asd'+groups);
         if(groups)
+            // Se ci sono gruppi, 
+            // effettua una SELECT <fields> FROM groups WHERE id = groups.gid o SELECT * FROM groups WHERE id = groups.gid
             var groups = await Group.findAll({
                 where: {
                     id: groups.map(g => g.gid)
@@ -66,16 +73,19 @@ const getUserGroups = async (req, res) => {
 }
 
 const createGroup = async (req, res) => {
+    // Creazione di una transazione 
     const transaction = await sequelize.transaction();
     try {
         const { name } = req.body;
-
+        
+        // Crea un gruppo con il nome passato
         const group = await Group.create({
             name: name,
             num_machines: 0,
             is_default: false
         }, { transaction });
 
+        // Crea una relazione tra l'utente e il gruppo appena creato
         await UserGroupRelation.create({
             uid: req.user.id,
             gid: group.id
@@ -92,6 +102,8 @@ const createGroup = async (req, res) => {
 
 const updateGroup = async (req, res) => {
     try {
+
+        // Aggiorna il gruppo con l'id passato
         await Group.update(req.body, {
             where: {
                 id: req.params.id
@@ -106,18 +118,26 @@ const updateGroup = async (req, res) => {
 
 const deleteGroup = async (req, res) => {
     try {
+
+        // Se il gruppo non è quello di default...
         if (await Group.findOne({where: {id: req.params.id, is_default: false}})) {
             const transaction = await sequelize.transaction();
+            
+            // Elimina tutte le relazioni tra le macchine e il gruppo
             await GroupMachineRelation.destroy({
                 where: {
                     gid: req.params.id
                 }
             }, { transaction });
+
+            // Elimina tutte le relazioni tra gli utenti e il gruppo
             await UserGroupRelation.destroy({
                 where: {
                     gid: req.params.id
                 }
             }, { transaction });
+
+            // Elimina il gruppo
             await Group.destroy({
                 where: {
                     id: req.params.id
@@ -136,79 +156,11 @@ const deleteGroup = async (req, res) => {
     res.status(200).send("Gruppo cancellato con successo");
 }
 
-/* const addUserToGroup = async (req, res) => {
-    const { uid } = req.body;
-    const gid = req.params.id;
-    const transaction = await sequelize.transaction();
-    if(await Group.findOne({
-        where: {
-            id: gid,
-            is_default: true
-        }})) {
-        res.status(403).send("Gruppo privato");
-        return;
-    }
-    try {
-        await Group.increment('num_machines', {
-            by: 1,
-            where: {
-                id: gid
-            }
-        }, { transaction });
-        await UserGroupRelation.create({
-            uid: uid,
-            gid: gid
-        }, { transaction });
-        await transaction.commit();
-    } catch (error) {
-        await transaction.rollback();
-        sendError(error, res);
-    }
-    res.status(200).send("Membro aggiunto con successo");
-}
-
-const removeUserFromGroup = async (req, res) => {
-    const { uid } = req.body;
-    const gid = req.params.id;
-    const transaction = await sequelize.transaction();
-    if (await Group.findOne({
-        where: {
-            id: gid,
-            is_default: true
-        }
-    })) {
-        res.status(403).send("Gruppo privato");
-        return;
-    }
-    try {
-        await Group.decrement('num_machines', {
-            by: 1,
-            where: {
-                id: gid
-            }
-        }, { transaction });
-        await UserGroupRelation.destroy({
-            where: {
-                uid: uid,
-                gid: gid
-            }
-        }, { transaction });
-        await transaction.commit();
-    } catch (error) {
-        await transaction.rollback();
-        res.status(501).send("Errore durante la rimozione del membro");
-    }
-    res.status(200).send("Membro rimosso con successo");
-}
-*/
-
 module.exports = {
     getGroups,
     getGroup,
     getUserGroups,
     createGroup,
     updateGroup,
-    deleteGroup/*,
-    addUserToGroup,
-    removeUserFromGroup*/
+    deleteGroup
 }

@@ -1,3 +1,5 @@
+
+// Gestisce query di filtro per le api
 const getTrueFields = (obj) => {
     var fields = [];
     Object.keys(obj).forEach((key) => {

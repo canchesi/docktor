@@ -25,7 +25,6 @@ var server = https.createServer({
     passphrase: fs.readFileSync(config.passphrase_path).toString() || ""
 }, app);
 server.listen(config.port);
-//app.listen(8081)
 
 // ------ Robe da API ------
 app.use('/api', require('./api'));

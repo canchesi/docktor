@@ -1,6 +1,7 @@
 const config = require('../config/config')[process.env.NODE_ENV || 'development'];
 const Sequelize = require('sequelize');
 
+// Connessione al database
 const sequelize = new Sequelize(
     config.database.database,
     config.database.user,
@@ -19,4 +20,5 @@ const sequelize = new Sequelize(
     }
 );
 
+// Controllo della connessione
 module.exports = sequelize.authenticate() && sequelize;

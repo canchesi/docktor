@@ -1,5 +1,3 @@
-//const goTo = require("../../middleware/goTo");
-
 const checkPort = (port) => {
     return Boolean(port.match(/^[0-9]{1,5}$/)) && port > 0 && port < 65536;
 }
@@ -182,11 +180,7 @@ const containerFullfill = (data) => {
             <td>' + buttons[container.State] + '</td></tr>')
 
     $('#check').remove();
-    //if ($('#table-containers').height() > $('#div-table').height())
         $('#div-table').attr('style', 'padding:0; overflow-y: auto; display: block;')
-    //else if (!$('#table').children().length){
-    //    $('#table-containers').parent().attr('style', 'padding: 0;position: relative').append('<i class="fa-solid fa-check" id="check" title="Non ci sono containers"></i>')
-    //}
 }
 
 const volBindFullfill = (data, connected) => {

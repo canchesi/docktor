@@ -1,6 +1,7 @@
 const sequelize = require('../utils/dbConnect');
 const { DataTypes } = require('sequelize');
 
+// Modello per la tabella group_machine
 const GroupMachineRelation = sequelize.define('group_machine', {
     id: {
         type: DataTypes.INTEGER,
