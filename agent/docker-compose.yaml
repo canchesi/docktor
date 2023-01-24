@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  agent:
+    image: agent #'canchesi/agent:latest'
+    container_name: 'docktor-agent'
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./ssl:/app/ssl
+      - .env:/app/.env
+    ports:
+      - '3000:3000'
