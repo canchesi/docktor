@@ -23,6 +23,10 @@ textarea {
 
 /* Classi */
 
+.alert {
+    margin-top: 1rem;
+}
+
 .center-in-page {
   position: absolute;
   top: 50%;
@@ -137,6 +141,11 @@ textarea {
     background-color: var(--color-primary);
 }
 
+.register-box {
+    margin: 0 auto;
+    width: 35%;
+}
+
 /* IDs */
 
 #login-button {
@@ -177,4 +186,12 @@ textarea {
 
 #card-containers, #card-volume {
     height: 60vh;
+}
+
+#registrazione {
+    color: var(--color-primary);
+}
+
+#registrazione:hover {
+    color: var(--color-secondary);
 }

@@ -17,7 +17,7 @@ const alreadyExists = (objType, checkType) => async (req, res, next) => {
                 if (Boolean(await User.findOne({
                     where: {
                         [Op.or]: [
-                            { email: req.body.email || '' },
+                            { email: req.body.email || req.body.user.email || '' },
                             { id: req.body.uid || req.params.id || '' }
                         ]
                     }

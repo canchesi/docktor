@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<head>
+    <title>Docktor Register</title>
+    <!-- Style and scripts -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/icons@2.1.0/css/all.css">
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <!-- Personal style and scirpts -->
+    <link rel="stylesheet" href="/style">
+    <script src="/scripts/register" defer></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body id="body-login">
+    <div class="register-box center-in-page">
+        <div class="card">
+            <div class="card-body register-card-body">
+                <h2 class="verdana mb-3">Nuovo utente</h2>
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control mb-3" placeholder="Email">
+                <div class="row">
+                    <div class="col-6">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" class="form-control mb-3" placeholder="Password">
+                    </div>
+                    <div class="col-6">
+                        <label for="conferma-password">Conferma password</label>
+                        <input type="password" name="conferma-password" id="conferma-password" class="form-control mb-3" placeholder="Conferma password">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="nome">Nome</label>
+                        <input type="text" name="nome" id="nome" class="form-control mb-3 col-12" placeholder="Nome">
+                    </div>
+                    <div class="col-6">
+                        <label for="cognome">Cognome</label>
+                        <input type="text" name="cognome" id="cognome" class="form-control mb-3 col-12" placeholder="Cognome">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="sesso">Sesso</label>
+                        <select name="sesso" id="sesso" class="form-control mb-3 col-12">
+                            <option value="M" selected>M</option>
+                            <option value="F">F</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label for="data-di-nascita">Data di nascita</label>
+                        <input type="date" name="data-di-nascita" id="data-di-nascita" class="form-control mb-3 col-12" placeholder="Data di nascita">
+                    </div>
+                </div>
+                <button id="register-button" class="btn btn-info col-2">Crea</button>
+            </div>
+        </div>
+    </div>
+</body>

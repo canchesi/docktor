@@ -149,7 +149,7 @@ const deleteGroup = async (req, res) => {
         return;
     }
     try {
-        await Group.increment('num_members', {
+        await Group.increment('num_machines', {
             by: 1,
             where: {
                 id: gid
@@ -181,7 +181,7 @@ const removeUserFromGroup = async (req, res) => {
         return;
     }
     try {
-        await Group.decrement('num_members', {
+        await Group.decrement('num_machines', {
             by: 1,
             where: {
                 id: gid

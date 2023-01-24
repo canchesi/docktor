@@ -12,7 +12,6 @@ const alreadyExists = require('../middleware/alreadyExists');
 users.get('/', getUsers);
 users.get('/this', getUser);
 users.get('/:id', getUser);
-users.post('/create', alreadyExists('user', false), createUser);
 users.post('/check', checkPassword);
 users.put('/this', updateUser);
 users.put('/:id', alreadyExists('user', true), updateUser);

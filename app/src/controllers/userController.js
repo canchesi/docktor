@@ -15,26 +15,38 @@ const GroupMachineRelation = require('../models/groupMachineModel');
 const createUser = async (req, res) => {
 
     const transaction = await sequelize.transaction();
-    const { email, passwd } = req.body;
-    if (!checkAllFields([email, passwd])) {
+    const { user, info } = req.body;
+    if (!checkAllFields([user.email, user.passwd])) {
         res.status(400).send("Richiesta non valida");
         return;
     }
+    console.log(req.body);
     try {
 
-        const user = await User.create({
-            email: email,
-            passwd: bcrypt.hashSync(passwd, await bcrypt.genSalt(10))
+        const createdUser = await User.create({
+            email: user.email,
+            passwd: bcrypt.hashSync(user.passwd, await bcrypt.genSalt(10))
         }, { transaction });
         const group = await Group.create({
-            name: user.id,
-            num_members: 1,
+            name: createdUser.id,
+            num_machines: 0,
             is_default: true
         }, { transaction });
         await UserGroupRelation.create({
-            uid: user.id,
+            uid: createdUser.id,
             gid: group.id
         }, { transaction });
+
+        console.log(info);
+        if (info != {} && info != undefined) {
+            await Info.create({
+                uid: createdUser.id,
+                first_name: info.first_name,
+                last_name: info.last_name,
+                birth_date: info.birth_date.split('T')[0],
+                gender: info.gender
+            }, { transaction });
+        }
         await transaction.commit();
         res.status(200).send("Registrazione avvenuta con successo");
 
@@ -111,7 +123,7 @@ const deleteUser = async (req, res) => {
             }
         }, { transaction });
         for (rel of await UserGroupRelation.findAll({ where: { uid: req.params.id }, attributes: ['gid'] })) {
-            await Group.decrement('num_members', {
+            await Group.decrement('num_machines', {
                 by: 1,
                 where: {
                     id: rel.gid
@@ -213,6 +225,19 @@ const checkPassword = async (req, res) => {
     }
 }
 
+const checkUser = async (req, res) => {
+    try {
+        const user = await User.findOne({ where: { email: req.query.email } });
+        if (user)
+            res.status(200).send(true);
+        else
+            res.status(200).send(false);
+    } catch (error) {
+        sendError(error, res);
+        return;
+    }
+}
+
 module.exports = {
     createUser,
     getUser,
@@ -221,5 +246,6 @@ module.exports = {
     deleteUser,
     loginUser,
     logoutUser,
-    checkPassword
+    checkPassword,
+    checkUser
 }
