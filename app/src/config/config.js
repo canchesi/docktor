@@ -11,7 +11,8 @@ var config = {
         port: process.env.PORT_DEV,
         key_path: process.env.KEY_PATH_DEV,
         cert_path: process.env.CERT_PATH_DEV,
-        token: process.env.TOKEN_KEY_DEV
+        passphrase_path: process.env.PASSPHRASE_PATH_DEV,
+        token: process.env.TOKEN_KEY_DEV,
     },
     production: {
         database: {
@@ -25,6 +26,7 @@ var config = {
         port: process.env.PORT,
         key_path: process.env.KEY_PATH,
         cert_path: process.env.CERT_PATH,
+        passphrase_path: process.env.PASSPHRASE_PATH,
         token: process.env.TOKEN_KEY
     }
 }
