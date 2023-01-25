@@ -5,3 +5,4 @@ agent/node_modules
 ssl/
 
 docktor.sql
+docktor-with-data.sql

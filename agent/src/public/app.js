@@ -1,5 +1,3 @@
-require('dotenv').config();
-const config = require('../config/config');
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
@@ -15,13 +13,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Creazione del server https
 var server = https.createServer({
-    key: fs.readFileSync(config.key_path),
-    cert: fs.readFileSync(config.cert_path),
-    passphrase: fs.readFileSync(config.passphrase_path).toString()
+    key: fs.readFileSync("/app/ssl/key.pem"),
+    cert: fs.readFileSync("/app/ssl/cert.pem"),
+    passphrase: fs.readFileSync("/app/ssl/passphrase.txt").toString()
 }, app);
 
 // Avvio del server sulla porta scelta
-server.listen(config.port);
+server.listen(process.env.PORT);
 
 // Utilizzo del controller per le richieste
 app.use(request);
