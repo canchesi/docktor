@@ -1,0 +1,6 @@
+FROM mysql
+COPY ./docktor.sql /docker-entrypoint-initdb.d/docktor.sql
+CMD ["/bin/bash -c ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh"] # backwards compat
+ENTRYPOINT ["docker-entrypoint.sh"]
+EXPOSE 3306 33060
+CMD ["mysqld"]

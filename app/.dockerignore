@@ -1,4 +1,4 @@
 ssl/
 .env
-docktor.sql
 docker-compose.yaml
+docktor-with-data.sql
