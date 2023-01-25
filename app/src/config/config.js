@@ -17,16 +17,10 @@ var config = {
     production: {
         database: {
             host: process.env.DB_HOST,
-            port: process.env.DB_PORT,
-            user: process.env.DB_USER,
             password: process.env.DB_PASS,
             database: process.env.DB_NAME,
-            dialect: process.env.DB_DIAL
         },
         port: process.env.PORT,
-        key_path: process.env.KEY_PATH,
-        cert_path: process.env.CERT_PATH,
-        passphrase_path: process.env.PASSPHRASE_PATH,
         token: process.env.TOKEN_KEY
     }
 }

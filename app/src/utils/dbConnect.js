@@ -3,12 +3,12 @@ const Sequelize = require('sequelize');
 
 // Connessione al database
 const sequelize = new Sequelize(
-    config.database.database,
-    config.database.user,
+    "docktor",
+    "root",
     config.database.password,
     {
         host: config.database.host,
-        dialect: config.database.dialect,
+        dialect: "mysql",
         port: config.database.port,
         logging: true   
     },{

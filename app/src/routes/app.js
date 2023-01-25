@@ -20,9 +20,9 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(cors())
 var server = https.createServer({
-    key: fs.readFileSync(config.key_path),
-    cert: fs.readFileSync(config.cert_path),
-    passphrase: fs.readFileSync(config.passphrase_path).toString() || ""
+    key: fs.readFileSync("/app/ssl/key.pem"),
+    cert: fs.readFileSync("/app/ssl/cert.pem"),
+    passphrase: fs.readFileSync("/app/ssl/passphrase.txt").toString() || ""
 }, app);
 server.listen(config.port);
 
